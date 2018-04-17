@@ -16,7 +16,7 @@ Role Variables
 |--------------------------|-------|-----------------------|-----------------------------------|
 | gluster_features_hci_cluster |  | UNDEF   | The cluster ip/hostnames. Can be set by gluster_hci_cluster: "{{ groups['hc-nodes'] }}",  where hc-nodes is from the inventory file.  |
 | gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for futher explanation and variables. |
-| gluster_features_hci_packages   | UNDEF | | List of packages to be installed. User need not set this, picked up from defaults. |
+| gluster_features_hci_packages   | | UNDEF | List of packages to be installed. User need not set this, picked up from defaults. |
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defauts are picked up. Set to override defaults. For default values see Gluster HCI documentation. |
 
 Dependencies
