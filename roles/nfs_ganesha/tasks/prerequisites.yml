@@ -1,0 +1,98 @@
+---
+# A pre-requisite checklist for NFS Ganesha
+
+# Configure statd and lockd service to use the ports required by NFS Ganesha
+- name: Define service port
+  lineinfile:
+     path: /etc/sysconfig/nfs
+     regexp: "{{ item }}"
+     line: '\1'
+     backrefs: yes
+  with_items:
+     - '^#(STATD_PORT=.*)'
+     - '^#(LOCKD_TCPPORT=.*)'
+     - '^#(LOCKD_UDPPORT=.*)'
+
+- name: Check packages installed, if not install
+  package:
+      name: "{{ item }}"
+      state: present
+  with_items: "{{ ganesha_packages }}"
+
+# nfslock will be restarted both on RHEL6 and RHEL7
+- name: Restart statd service
+  service: name=nfslock state=restarted
+
+# The below services are started only on RHEL7
+- name: Restart services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+     - nfs-config
+     - rpc-statd
+  when: >
+     ansible_distribution == "RedHat" and
+     ansible_distribution_major_version == "7"
+
+- name: Stop services
+  service:
+     name: "{{ item }}"
+     state: stopped
+  with_items:
+     - NetworkManager
+     - nfs-server
+
+- name: Disable service
+  service:
+     name: "{{ item }}"
+     enabled: no
+  with_items:
+     - NetworkManager
+     - nfs-server
+
+- name: Enable services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+     - glusterfssharedstorage
+     - nfs-ganesha
+     - network
+     - pcsd
+     - pacemaker
+
+- name: Start services
+  service:
+     name: "{{ item }}"
+     state: started
+  with_items:
+     - network
+     - pcsd
+     - hacluster
+
+- name: Create a user hacluster if not already present
+  user: name=hacluster
+
+# Set the password
+- name: Set the password for hacluster
+  set_fact:
+     ganesha_ha_pass: "{{ganesha_ha_pass|default('hacluster')}}"
+
+- name: Set the hacluster user the same password on new nodes
+  shell: >
+    echo "{{ganesha_ha_pass}}" | passwd --stdin hacluster
+
+- name: Pcs cluster authenticate the hacluster on new nodes
+  shell: pcs cluster auth -u hacluster -p "{{ganesha_ha_pass}}" "{{ item }}"
+  with_items: "{{ gluster_features_ganesha_clusternodes }}"
+
+- name: Pause for a few seconds after pcs auth
+  pause: seconds=20
+
+# Uncomment the below task once RHGS is based on 7.4 RHEL
+# - name: Set gluster_use_execmem flag on and keep it persistent
+#   seboolean:
+#     name: gluster_use_execmem
+#     state: yes
+#     persistent: yes

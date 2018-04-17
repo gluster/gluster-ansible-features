@@ -1,0 +1,37 @@
+---
+# Run only on the master node
+
+- name: Enable NFS Ganesha
+  shell: gluster nfs-ganesha enable --mode=script
+  register: result
+  failed_when:
+    - "'is already enabled' not in result.stderr"
+    - "'success' not in result.stderr"
+    - "'success' not in result.stdout"
+
+- name: Pause for 30 seconds (takes a while to enable NFS Ganesha)
+  pause: seconds=30
+
+- name: Check NFS Ganesha status
+  shell: >
+     /usr/libexec/ganesha/ganesha-ha.sh --status "{{ganesha_ha_base_dir}}" | \
+         grep 'Cluster HA Status'
+  register: result
+  ignore_errors: yes
+
+- name: Report NFS Ganesha status
+  debug: msg={{ result.stdout }} verbosity=0
+  when: result.stderr == ''
+
+- name: Report NFS Ganesha status (If any errors)
+  debug: msg={{ result.stderr }} verbosity=0
+  when: result.stderr != ''
+
+# gluster_volume has a bug where it tries to add a brick while setting options
+# on an existing volume. Use shell for now.
+- name: Export the NFS Ganesha volume
+  shell: >
+     gluster volume set "{{gluster_features_ganesha_volume}}" ganesha.enable on
+  register: result
+  failed_when: "result.rc != 0 and ('already' not in result.stderr
+                               and 'success' not in result.msg)"

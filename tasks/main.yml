@@ -1,0 +1,25 @@
+---
+# Include firewall role from glusterfs.infra
+# - name: Add firewall rules
+#   include_role:
+#     name: gluster.infra
+#   tags:
+#     - firewall
+
+# Setup NFS Ganesha
+- name: Setup NFS-Ganesha
+  import_role:
+    name: "gluster.features/roles/nfs_ganesha"
+  when: >
+    gluster_features_ganesha_haname is defined
+  tags:
+    - nfs_ganesha
+
+# Setup a Hyperconverged Infrastructure
+- name: Setup GlusterFS HCI
+  import_role:
+    name: "gluster.features/roles/gluster_hci"
+  when: >
+    gluster_features_hci_cluster is defined
+  tags:
+    - gluster_hci

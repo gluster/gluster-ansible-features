@@ -1,0 +1,93 @@
+---
+# Pre-requisites  for deploying HCI
+
+# Install the necessary packages for deploying HCI
+- name: Check if packages are installed, if not install
+  package:
+      name: "{{ item }}"
+      state: present
+  with_items: "{{ gluster_features_hci_packages }}"
+  when: gluster_features_hci_packages is defined
+
+# Enable and start chronyd and glusterd
+- name: Enable and start glusterd and chronyd
+  service:
+     name: "{{ item }}"
+     state: started
+     enabled: yes
+  with_items:
+     - chronyd
+     - glusterd
+
+# Add user qemu to group gluster
+- name: Add user qemu to gluster group
+  user:
+    name: qemu
+    groups: gluster
+    append: yes
+
+# Disable all the hook scripts
+# Ignore errors, since some files might not be present.
+- name: Disable the hook scripts
+  command: rename S D "{{ item }}"
+  with_items: "{{ gluster_features_hci_hookscripts }}"
+  when: gluster_features_hci_hookscripts is defined
+  failed_when: false
+
+# Disable multipath on all the nodes
+- name: Disable multipath and blacklist the devices
+  block:
+     # Warn if there are any existing sessions
+     - name: Disable multipath and blacklist the devices
+       shell: iscsiadm --mode session >/dev/null 2>&1
+       register: result
+       failed_when: false
+
+     # Warn if active sessions are found
+     - debug:
+          msg: "This script will prevent listing iscsi devices when multipath
+                CLI is called without parameters, and so no LUNs will be
+                discovered by applications like VDSM (oVirt, RHV) which
+                shell-out to call `/usr/sbin/multipath` after target login"
+       when: result.rc == 0
+
+     # Run vdsm-tool
+     - name: Configure vdsm
+       command: vdsm-tool configure --force
+
+     # Disable multipath on the nodes
+     - name: modprobe multipath module and run multipath flush
+       command: "{{ item }}"
+       with_items:
+          - modprobe dm_multipath
+          - multipath -F
+
+     # Insert wildcard to blacklist all the devices
+     - name: Insert headers into multipath.conf
+       blockinfile:
+          path: /etc/multipath.conf
+          insertbefore: 'BOF'
+          marker: ''
+          block: |
+             # VDSM REVISION 1.3
+             # VDSM PRIVATE
+
+     # An ugly hack added to remove the first empty line added by
+     # blockinfile.
+     - name: Insert headers into multipath.conf
+       lineinfile:
+          path: /etc/multipath.conf
+          state: absent
+          insertbefore: BOF
+          regexp: '^$'
+
+     # Insert wildcard to blacklist all the devices
+     - name: Insert wildcard to blacklist nodes
+       blockinfile:
+          path: /etc/multipath.conf
+          marker: "# {mark} Added by gluster_hci role"
+          block: |
+
+             blacklist {
+                     devnode "*"
+             }

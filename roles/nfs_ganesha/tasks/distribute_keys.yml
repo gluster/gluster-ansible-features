@@ -1,0 +1,28 @@
+---
+# Distribute public keys to all the nodes and start pcs
+- name: Copy the public key to remote nodes
+  copy:
+    src: "{{ganesha_tmp_dir}}/{{gluster_features_ganesha_masternode}}\
+          /var/lib/glusterd/nfs/secret.pem.pub"
+    dest: /var/lib/glusterd/nfs/secret.pem.pub
+    mode: 0600
+
+- name: Copy the private key to remote node
+  copy:
+    src: "{{ganesha_tmp_dir}}/{{gluster_features_ganesha_masternode}}\
+          /var/lib/glusterd/nfs/secret.pem"
+    dest: /var/lib/glusterd/nfs/secret.pem
+    mode: 0600
+
+- name: Deploy the pubkey on all nodes
+  authorized_key:
+     user: root
+     state: present
+     key: "{{ lookup('file', ganesha_tmp_dir + '/' +
+              gluster_features_ganesha_masternode +
+             '/var/lib/glusterd/nfs/secret.pem.pub') }}"
+
+- name: Cleanup the temporary directory
+  file:
+     state: absent
+     path: "{{ ganesha_tmp_dir }}/"
