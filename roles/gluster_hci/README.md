@@ -31,9 +31,9 @@ Assuming that backend is already created. Else please see examples for more
 detailed playbooks.
 
 ```
-- name: Setting NFS Ganesha
+- name: Setting up GlusterFS HCI
   remote_user: root
-  hosts: nfs_ganesha
+  hosts: gluster_hci
   gather_facts: true
 
   vars:
