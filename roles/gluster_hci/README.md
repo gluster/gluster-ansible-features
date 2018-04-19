@@ -34,7 +34,7 @@ detailed playbooks.
 - name: Setting up GlusterFS HCI
   remote_user: root
   hosts: gluster_hci
-  gather_facts: true
+  gather_facts: false
 
   vars:
     gluster_features_hci_cluster: "{{ groups['hc-nodes'] }}"
