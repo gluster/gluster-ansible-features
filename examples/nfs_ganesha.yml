@@ -1,7 +1,7 @@
 - name: Setup NFS Ganesha
   hosts: ganesha_nodes
   remote_user: root
-  gather_facts: true
+  gather_facts: false
 
   vars:
     ganesha_master_node: "{{ groups['ganesha_nodes'][0] }}"

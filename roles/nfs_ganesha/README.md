@@ -49,7 +49,7 @@ Note to gather_facts should be set to true.
 - name: Setting NFS Ganesha
   remote_user: root
   hosts: nfs_ganesha
-  gather_facts: true
+  gather_facts: false
 
   vars:
      # Setting up NFS Ganesha

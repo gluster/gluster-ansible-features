@@ -19,21 +19,14 @@
       state: present
   with_items: "{{ ganesha_packages }}"
 
-# nfslock will be restarted both on RHEL6 and RHEL7
-- name: Restart statd service
-  service: name=nfslock state=restarted
-
-# The below services are started only on RHEL7
 - name: Restart services
   service:
     name: "{{ item }}"
     state: restarted
   with_items:
+     - nfslock
      - nfs-config
      - rpc-statd
-  when: >
-     ansible_distribution == "RedHat" and
-     ansible_distribution_major_version == "7"
 
 - name: Stop services
   service:
