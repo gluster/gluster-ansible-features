@@ -21,8 +21,3 @@
      key: "{{ lookup('file', ganesha_tmp_dir + '/' +
               gluster_features_ganesha_masternode +
              '/var/lib/glusterd/nfs/secret.pem.pub') }}"
-
-- name: Cleanup the temporary directory
-  file:
-     state: absent
-     path: "{{ ganesha_tmp_dir }}/"

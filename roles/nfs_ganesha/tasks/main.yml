@@ -27,6 +27,7 @@
 - name: Setup shared storage and generate keys
   import_tasks: master_tasks.yml
   when: gluster_features_ganesha_masternode is defined
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
   run_once: True
   ignore_errors: true
   tags:
@@ -41,10 +42,12 @@
     - distributekeys
 
 # Run only on masternode
+# delegate_to is not necessary if the first node is used as master
 - name: Enable NFS Ganesha cluster
   import_tasks: enable_ganesha.yml
   when: gluster_features_ganesha_masternode is defined
   ignore_errors: true
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
   run_once: True
   tags:
     - enableganesha

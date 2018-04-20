@@ -41,8 +41,6 @@ Example Playbook
 ----------------
 
 An example playbook to deploy NFS Ganesha.
-Note to gather_facts should be set to true.
-
 
 ```yaml
 ---
