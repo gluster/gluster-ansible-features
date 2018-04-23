@@ -1,0 +1,102 @@
+---
+# This playbook contains the steps needed to create a georep master session
+# Generate temporary file for storing the keys
+- name: Create temporary storage directory
+  tempfile:
+    state: directory
+    suffix: _georep
+  register: result
+  delegate_to: 127.0.0.1
+  run_once: True
+
+- name: Get the name of the directory created
+  set_fact:
+     georep_base_dir: "{{ result['path'] }}"
+  run_once: True
+
+# Run this only on the master node. By default first node
+- name: Generate a common pem pub file
+  shell: "gluster system:: execute gsec_create"
+  delegate_to: "{{ georep_masternode }}"
+  run_once: True
+
+- name: Copy the generated public key to local
+  fetch: >
+     src: /var/lib/glusterd/geo-replication/common_secret.pem.pub
+     dest: "{{ georep_base_dir }}/{{ gluster_features_georep_mastervol }}\
+            _{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
+     flat: yes
+  delegate_to: "{{ georep_masternode }}"
+  run_once: True
+
+# Run this only on the slave nodes
+- name: Create user and groups on slaves
+  block:
+     - name: Create a new group
+       group:
+          name: "{{ gluster_features_georep_group }}"
+          state: present
+
+     - name: Create a new user
+       user:
+          name: "{{ georepuser }}"
+          group: "{{ gluster_features_georep_group }}"
+          generate_ssh_key: yes
+       delegate_to: "{{ georep_slaves }}"
+       when: georepuser != "root"
+
+     - name: Create the mountbroker-root directory
+       file:
+          path: /var/gluster-mountbroker
+          state: directory
+          mode: 0711
+  delegate_to: "{{ item }}"
+  loop: "{{groups['georepslaves']}}"
+
+
+# Run on one of the slave nodes
+- name: Setup mount broker on one of the slaves
+  block:
+     - name: Copy the pem key to client
+       copy:
+         src: "{{ georep_base_dir }}/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}\
+                _common_secret.pem.pub"
+         dest: "{{ /var/lib/glusterd/geo-replication/{{ gluster_features_georep_mastervol }}_\
+                {{ slavevolname }}_common_secret.pem.pub"
+         mode: 0600
+
+     - name: Setup mountbroker
+       shell: >
+         "gluster-mountbroker setup /var/gluster-mountbroker {{ groupname }}"
+       when: georepuser != "root"
+
+     - name: Add volume and user to mountbroker service
+       shell: "gluster-mountbroker add {{ slavevolname }} {{ georepuser }}"
+       when: georepuser != "root"
+
+     - name: Copy pem keys
+       shell: "gluster system:: copy file /geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
+
+     - name: Add pem keys
+       shell: "gluster system:: execute add_secret_pub {{ georepuser }} \
+                    geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}\
+                    _common_secret.pem.pub"
+  delegate_to: "{{groups['georepslaves'][0]}}"
+  run_once: True
+
+# Restart glusterd on slavenodes
+- name: Restart glusterd on slave nodes
+  service: name=glusterd state=restarted
+  delegate_to: "{{ item }}"
+  loop: "{{groups['georepslaves']}}"
+  when: georepuser != "root"
+
+# Enable geo-replication
+- name: Create the geo-rep session
+  geo_rep:
+     action: create
+     mastervol: "{{ gluster_features_georep_mastervol }}"
+     slavevol: "{{ gluster_features_georep_slavevol }}"
+     force: "{{ force }}"
+     georepuser: "{{ georepuser }}"
+  run_once: True
