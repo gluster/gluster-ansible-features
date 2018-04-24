@@ -1,11 +1,4 @@
 ---
-# Include firewall role from glusterfs.infra
-# - name: Add firewall rules
-#   include_role:
-#     name: gluster.infra
-#   tags:
-#     - firewall
-
 # Setup NFS Ganesha
 - name: Setup NFS-Ganesha
   import_role:
@@ -40,4 +33,4 @@
   when: >
     gluster_features_ctdb_nodes is defined
   tags:
-    - ctdb
+    - georeplication
