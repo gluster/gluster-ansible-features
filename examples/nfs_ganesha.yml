@@ -1,0 +1,16 @@
+- name: Setup NFS Ganesha
+  hosts: ganesha_nodes
+  remote_user: root
+  gather_facts: false
+
+  vars:
+    ganesha_master_node: "{{ groups['ganesha_nodes'][0] }}"
+    ganesha_cluster_nodes: "{{ groups['ganesha_nodes'] }}"
+
+    # This has to be hostnames
+    ganesha_ha_name: ganesha-ha-13-apr
+    ganesha_cluster_hostnames: "server1,server2,server3"
+    ganesha_vip_list: 10.70.44.121,10.70.44.122
+
+  roles:
+     - gluster.features

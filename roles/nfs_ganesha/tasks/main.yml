@@ -1,0 +1,61 @@
+---
+# tasks file for nfs_ganesha
+# Generate temporary file for storing the keys
+- name: Create temporary storage directory
+  tempfile:
+    state: directory
+    suffix: _ganesha
+  register: result
+  delegate_to: 127.0.0.1
+  run_once: True
+
+- name: Get the name of the directory created
+  set_fact:
+     ganesha_tmp_dir: "{{ result['path'] }}"
+     ganesha_ha_base_dir: '/var/run/gluster/shared_storage/nfs-ganesha'
+  run_once: True
+
+# Run this on all the nodes
+- name: Pre-requisites for setting up NFS Ganesha
+  import_tasks: prerequisites.yml
+  when: gluster_features_ganesha_clusternodes is defined
+  ignore_errors: true
+  tags:
+    - prerequisites
+
+# Run only on masternode
+- name: Setup shared storage and generate keys
+  import_tasks: master_tasks.yml
+  when: gluster_features_ganesha_masternode is defined
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
+  run_once: True
+  ignore_errors: true
+  tags:
+    - mastersetup
+
+# Run on all the nodes
+- name: Distribute the keys to nodes
+  import_tasks: distribute_keys.yml
+  when: gluster_features_ganesha_clusternodes is defined
+  ignore_errors: true
+  tags:
+    - distributekeys
+
+# Run only on masternode
+# delegate_to is not necessary if the first node is used as master
+- name: Enable NFS Ganesha cluster
+  import_tasks: enable_ganesha.yml
+  when: gluster_features_ganesha_masternode is defined
+  ignore_errors: true
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
+  run_once: True
+  tags:
+    - enableganesha
+
+# Ensure to delete the temporary directory
+- name: Delete the temporary directory
+  file:
+     state: absent
+     path: "{{ ganesha_tmp_dir }}"
+  delegate_to: 127.0.0.1
+  run_once: True

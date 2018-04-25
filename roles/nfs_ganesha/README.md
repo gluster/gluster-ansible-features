@@ -1,41 +1,35 @@
-gluster.features
+nfs_ganesha
 =========
 
-The gluster.features role implements GlusterFS usecases. This role implements following sub-roles:
+The role nfs_ganesha enables user to perform the following actions:
 
-* nfs_ganesha
-* gluster_hc
-* ctdb
-* geo_replication
+* Create nfs_ganesha cluster
+* Destroy nfs_ganesha cluster
+* Add a node to nfs_ganesha cluster
+* Delete a node from nfs_ganesha cluster
+* Export a nfs_ganesha cluster
+* Unexport a nfs_ganesha cluster
+* Refresh the configuration
 
 Requirements
 ------------
 
-* GlusterFS
+GlusterFS 3.2 or above.
+NFS Ganesha packages for gluster
 
 Role Variables
 --------------
 
-### NFS Ganesha related variables
+### Creating nfs_ganesha cluster
 
 | Name                     |Choices| Default value         | Comments                          |
 |--------------------------|-------|-----------------------|-----------------------------------|
 | gluster_features_ganesha_haname |  | UNDEF   | Name of the NFS Ganesha cluster.  |
 | gluster_features_ganesha_volume |    | UNDEF    | An existing GlusterFS volume which will be exported through NFS Ganesha |
-| gluster_features_ganesha_hostnames  |  | UNDEF | A comma separated list of hostnames, these are subset of nodes of the Gluster Trusted Pool that form the ganesha HA cluster|
 | gluster_features_ganesha_viplist    | UNDEF | public   | A comma separated list of virtual IPs for each of the nodes specified above. |
+| gluster_features_ganesha_hostnames  |  | UNDEF | A comma separated list of hostnames, these are subset of nodes of the Gluster Trusted Pool that form the ganesha HA cluster|
 | gluster_features_ganesha_masternode |    | UNDEF | One of the nodes from the Trusted Storage Pool, gluster commands will be run on this node. gluster_features_ganesha_masternode: "{{ groups['ganesha_nodes'][0] }}" - the first node of the inventory section ganesha_nodes will be used.|
 | gluster_features_ganesha_clusternodes |    | UNDEF | List of the nodes in the Trusted Storage Pool. gluster_features_ganesha_clusternodes: "{{ groups['ganesha_nodes'] }}" - The nodes listed in section ganesha_nodes in the inventory. |
-
-### Gluster Hyperconverged Interface setup related roles
-
-| Name                     |Choices| Default value         | Comments                          |
-|--------------------------|-------|-----------------------|-----------------------------------|
-| gluster_features_hci_cluster |  | UNDEF   | The cluster ip/hostnames. Can be set by gluster_hci_cluster: "{{ groups['hc-nodes'] }}",  where hc-nodes is from the inventory file.  |
-| gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for further explanation and variables. |
-| gluster_features_hci_packages   | UNDEF | | List of packages to be installed. User need not set this, picked up from defaults. |
-| gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. For default values see Gluster HCI documentation. |
-
 
 Dependencies
 ------------
@@ -43,15 +37,10 @@ Dependencies
 gluster.infra
 gluster.cluster
 
-
 Example Playbook
 ----------------
 
-Creating a NFS Ganesha Cluster:
-
 An example playbook to deploy NFS Ganesha.
-Note to gather_facts should be set to true.
-
 
 ```yaml
 ---
@@ -86,4 +75,4 @@ GPLv3
 Author Information
 ------------------
 
-Sachidananda Urs <surs@redhat.com>
+Author: Sachidananda Urs <surs@redhat.com>

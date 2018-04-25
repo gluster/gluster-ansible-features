@@ -1,0 +1,36 @@
+---
+# defaults file for gluster_hci
+gluster_features_hci_packages:
+   - vdsm
+   - vdsm-gluster
+   - ovirt-host
+    # - ovirt-hosted-engine-setup
+   - screen
+   - gluster-nagios-addons
+
+gluster_features_hci_volume_options:
+   {  # group: 'virt',
+     storage.owner-uid: '36',
+     storage.owner-gid: '36',
+     features.shard: 'on',
+     features.shard-block-size: '512MB',
+     performance.low-prio-threads: '32',
+     cluster.data-self-heal-algorithm: 'full',
+     cluster.locking-scheme: 'granular',
+     cluster.shd-wait-qlength: '10000',
+     cluster.shd-max-threads: '8',
+     network.ping-timeout: '30',
+     user.cifs: 'off',
+     performance.strict-o-direct: 'on',
+     network.remote-dio: 'off',
+     cluster.use-compound-fops: 'on'
+   }
+
+gluster_features_hci_hookscripts:
+   - /var/lib/glusterd/hooks/1/set/post/S30samba-set.sh
+   - /var/lib/glusterd/hooks/1/start/post/S30samba-start.sh
+   - /var/lib/glusterd/hooks/1/stop/pre/S30samba-stop.sh
+   - /var/lib/glusterd/hooks/1/reset/post/S31ganesha-reset.sh
+   - /var/lib/glusterd/hooks/1//start/post/S31ganesha-start.sh
+   - /var/lib/glusterd/hooks/1/start/post/S29CTDBsetup.sh
+   - /var/lib/glusterd/hooks/1/stop/pre/S29CTDB-teardown.sh

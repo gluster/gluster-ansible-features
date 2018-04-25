@@ -1,0 +1,36 @@
+---
+# This playbook contains the tasks that has to be run only on the masternode.
+# Masternode can be any one of the Ganesha nodes
+
+# The gluster_volume does not seem to work when the volume is `all'.
+# It tries to create a volume, use shell for now.
+- name: Make the volume a gluster shared volume
+  shell: gluster volume set all cluster.enable-shared-storage enable
+  register: result
+  failed_when: "result.rc != 0 and ('already exists' not in result.stderr
+                               and 'success' not in result.msg)"
+
+- name: Generate ssh key in one of the nodes in HA cluster
+  shell: >
+     echo -e  'y\n' | ssh-keygen -q -t rsa -N '' -f \
+          /var/lib/glusterd/nfs/secret.pem
+
+# The base directory has to be one of the directories unique in /tmp/
+# Generated in the main.yml of the task
+- name: Copy the ssh keys to the local machine
+  fetch: src=/var/lib/glusterd/nfs/{{item}}
+         dest="{{ ganesha_tmp_dir }}"
+  with_items:
+     - secret.pem.pub
+     - secret.pem
+
+# Create configuration for NFS Ganesha
+- name: Create configuration directory for nfs_ganesha
+  file: path="{{ ganesha_ha_base_dir }}" state=directory
+
+- name: Copy ganesha.conf to config directory on shared volume
+  shell: cp -rf /etc/ganesha/* "{{ ganesha_ha_base_dir }}"
+
+- name: Create ganesha-ha.conf file
+  template: src=ganesha-ha.conf
+            dest="{{ ganesha_ha_base_dir }}"

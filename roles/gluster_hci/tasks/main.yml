@@ -1,0 +1,12 @@
+---
+# tasks file for gluster_hci
+- name: Pre-requisites for setting up Gluster HCI
+  import_tasks: prerequisites.yml
+  tags:
+    - prerequisites
+
+# Create GlusterFS volumes on the nodes
+- name: Create GlusterFS volumes
+  import_tasks: hci_volumes.yml
+  tags:
+    - hcivolcreate

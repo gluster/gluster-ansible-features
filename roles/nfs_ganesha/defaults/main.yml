@@ -1,0 +1,9 @@
+---
+# defaults file for nfs_ganesha
+ganesha_packages:
+   - glusterfs-ganesha
+   - nfs-ganesha
+   - corosync
+   - pacemaker
+   - libntirpc
+   - pcs

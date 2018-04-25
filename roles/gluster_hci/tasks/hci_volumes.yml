@@ -1,0 +1,23 @@
+---
+# Create volumes for gluster_hci
+- name: Create the GlusterFS volumes
+  gluster_volume:
+     state: present
+     name: "{{ item.volname }}"
+     bricks: "{{ item.brick }}"
+     replicas: 3
+     transport: tcp
+     arbiters: "{{ item.arbiter | default(0) }}"
+     force: yes
+     cluster: "{{ gluster_features_hci_cluster }}"
+     options: "{{ gluster_features_hci_volume_options }}"
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+
+# gluster_volume does not support `gluster heal' command which gluster
+# has implemented as an exception.
+- name: Set granual-entry-heal on
+  command: >
+     gluster volume heal "{{item.volname}}" granular-entry-heal enable
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"

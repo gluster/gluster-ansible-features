@@ -1,0 +1,8 @@
+---
+# defaults file for ctdb
+ctdb_packages:
+   - samba
+   - samba-client
+   - glusterfs-server
+   - ctdb
+
