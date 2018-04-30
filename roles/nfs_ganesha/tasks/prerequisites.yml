@@ -80,9 +80,11 @@
 - name: Pause for a few seconds after pcs auth
   pause: seconds=20
 
-# Uncomment the below task once RHGS is based on 7.4 RHEL
 - name: Set gluster_use_execmem flag on and keep it persistent
   seboolean:
-    name: gluster_use_execmem
+    name: "{{ item }}"
     state: yes
     persistent: yes
+  with_items:
+    - gluster_use_execmem
+    - ganesha_use_fusefs
