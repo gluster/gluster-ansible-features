@@ -33,7 +33,6 @@
      name: "{{ item }}"
      state: stopped
   with_items:
-     - NetworkManager
      - nfs-server
 
 - name: Disable service
@@ -41,7 +40,6 @@
      name: "{{ item }}"
      enabled: no
   with_items:
-     - NetworkManager
      - nfs-server
 
 - name: Enable services
@@ -62,7 +60,6 @@
   with_items:
      - network
      - pcsd
-     - hacluster
 
 - name: Create a user hacluster if not already present
   user: name=hacluster
@@ -83,9 +80,11 @@
 - name: Pause for a few seconds after pcs auth
   pause: seconds=20
 
-# Uncomment the below task once RHGS is based on 7.4 RHEL
-# - name: Set gluster_use_execmem flag on and keep it persistent
-#   seboolean:
-#     name: gluster_use_execmem
-#     state: yes
-#     persistent: yes
+- name: Set gluster_use_execmem flag on and keep it persistent
+  seboolean:
+    name: "{{ item }}"
+    state: yes
+    persistent: yes
+  with_items:
+    - gluster_use_execmem
+    - ganesha_use_fusefs
