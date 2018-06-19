@@ -3,7 +3,21 @@
 # Set the georepuser variable. If not defined default to root
 - name: Set Geo-replication user
   set_fact:
-     georepuser: "{{ georepuser | default('root') }}"
+     georepuser: "{{ gluster_features_georep_user | default('root') }}"
+
+# Generate temporary file for storing the keys
+- name: Create temporary storage directory
+  tempfile:
+    state: directory
+    suffix: _georep
+  register: result
+  delegate_to: 127.0.0.1
+  run_once: True
+
+- name: Get the name of the directory created
+  set_fact:
+     georep_base_dir: "{{ result['path'] }}"
+  run_once: True
 
 # Run only on masternode
 - name: Setup shared storage and generate keys
