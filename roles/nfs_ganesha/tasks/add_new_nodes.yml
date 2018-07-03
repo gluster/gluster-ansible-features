@@ -1,0 +1,34 @@
+---
+# Distribute public keys to all the nodes and start pcs
+- name: Copy the public key to remote nodes
+  copy:
+    src: "{{ganesha_tmp_dir}}/{{gluster_features_ganesha_newnodes_vip[0].host}}\
+          /var/lib/glusterd/nfs/secret.pem.pub"
+    dest: /var/lib/glusterd/nfs/secret.pem.pub
+    mode: 0600
+
+- name: Copy the private key to remote node
+  copy:
+    src: "{{ganesha_tmp_dir}}/{{gluster_features_ganesha_newnodes_vip[0].host}}\
+          /var/lib/glusterd/nfs/secret.pem"
+    dest: /var/lib/glusterd/nfs/secret.pem
+    mode: 0600
+
+- name: Deploy the pubkey on all nodes
+  authorized_key:
+     user: root
+     state: present
+     key: "{{ lookup('file', ganesha_tmp_dir + '/' +
+              gluster_features_ganesha_newnodes_vip[0].host +
+             '/var/lib/glusterd/nfs/secret.pem.pub') }}"
+
+- name: Adds a node to the cluster
+  shell: >
+     /usr/libexec/ganesha/ganesha-ha.sh --add "{{ ganesha_ha_base_dir }}" \
+                                        {{ item.host }} {{ item.vip }}
+  with_items: "{{ gluster_features_ganesha_newnodes_vip }}"
+  register: result
+
+- name: Report ganesha add-node status
+  debug: msg={{ result.results[0].stdout_lines }} verbosity=0
+  when: result.results is defined and result.results[0].stdout_lines is defined

@@ -30,6 +30,7 @@ Role Variables
 | gluster_features_ganesha_hostnames  |  | UNDEF | A comma separated list of hostnames, these are subset of nodes of the Gluster Trusted Pool that form the ganesha HA cluster|
 | gluster_features_ganesha_masternode |    | UNDEF | One of the nodes from the Trusted Storage Pool, gluster commands will be run on this node. gluster_features_ganesha_masternode: "{{ groups['ganesha_nodes'][0] }}" - the first node of the inventory section ganesha_nodes will be used.|
 | gluster_features_ganesha_clusternodes |    | UNDEF | List of the nodes in the Trusted Storage Pool. gluster_features_ganesha_clusternodes: "{{ groups['ganesha_nodes'] }}" - The nodes listed in section ganesha_nodes in the inventory. |
+| gluster_features_ganesha_newnodes_vip | | | Dictionary containing the ip/hostname of new node and corresponding VIP. See example below. |
 
 Dependencies
 ------------
@@ -66,6 +67,29 @@ An example playbook to deploy NFS Ganesha.
 
 The above playbook assumes that a volume named nfs_ganesha is created and running.
 
+An example playbook to add a new node to NFS Ganesha cluster.
+
+```yaml
+---
+- name: Setup NFS Ganesha
+  hosts: newnodes
+  remote_user: root
+  gather_facts: false
+
+  vars:
+    gluster_features_ganesha_masternode: '10.70.42.31'
+    gluster_features_ganesha_clusternodes: "{{ groups['newnodes'] }}"
+
+    # This has to be hostnames
+    gluster_features_ganesha_haname: ganesha-ha
+    gluster_features_ganesha_volume: 'ganeshavol'
+    gluster_features_ganesha_newnodes_vip:
+      - { host: '10.70.43.206', vip: '192.168.1.4' }
+
+  roles:
+     - gluster.features
+
+```
 
 License
 -------

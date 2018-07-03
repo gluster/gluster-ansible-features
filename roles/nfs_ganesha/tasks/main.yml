@@ -23,34 +23,61 @@
   tags:
     - prerequisites
 
-# Run only on masternode
+# The base directory has to be one of the directories unique in /tmp/
+# Generated in the main.yml of the task
+- name: Copy the ssh keys to the local machine
+  fetch: src=/var/lib/glusterd/nfs/{{item}}
+         dest="{{ ganesha_tmp_dir }}"
+  with_items:
+     - secret.pem.pub
+     - secret.pem
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
+
+# Run on all the nodes
+- name: Distribute the keys to nodes
+  import_tasks: distribute_keys.yml
+  when:
+    - gluster_features_ganesha_clusternodes is defined
+    - gluster_features_ganesha_newnodes_vip is undefined
+  ignore_errors: true
+  tags:
+    - distributekeys
+
+# New cluster creation, run only on masternode
+#
 - name: Setup shared storage and generate keys
   import_tasks: master_tasks.yml
-  when: gluster_features_ganesha_masternode is defined
+  when:
+    - gluster_features_ganesha_masternode is defined
+    - gluster_features_ganesha_newnodes_vip is undefined
   delegate_to: "{{ gluster_features_ganesha_masternode }}"
   run_once: True
   ignore_errors: true
   tags:
     - mastersetup
 
-# Run on all the nodes
-- name: Distribute the keys to nodes
-  import_tasks: distribute_keys.yml
-  when: gluster_features_ganesha_clusternodes is defined
-  ignore_errors: true
-  tags:
-    - distributekeys
-
 # Run only on masternode
 # delegate_to is not necessary if the first node is used as master
 - name: Enable NFS Ganesha cluster
   import_tasks: enable_ganesha.yml
-  when: gluster_features_ganesha_masternode is defined
+  when:
+    - gluster_features_ganesha_masternode is defined
+    - gluster_features_ganesha_newnodes_vip is undefined
   ignore_errors: true
   delegate_to: "{{ gluster_features_ganesha_masternode }}"
   run_once: True
   tags:
     - enableganesha
+
+# Add nodes to existing ganesha cluster
+#
+- name: Add nodes to Ganesha cluster
+  import_tasks: add_new_nodes.yml
+  when: gluster_features_ganesha_newnodes_vip is defined
+  delegate_to: "{{ gluster_features_ganesha_masternode }}"
+  run_once: Ture
+  tags:
+    - ganesha_addnodes
 
 # Ensure to delete the temporary directory
 - name: Delete the temporary directory
