@@ -58,13 +58,13 @@
        when: georepuser != "root"
 
      - name: Copy pem keys
-       shell: "gluster system:: copy file /geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
+       shell: >
+         gluster system:: copy file /geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
 
      - name: Add pem keys
-       shell: "gluster system:: execute add_secret_pub {{ georepuser }} \
-                    geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}\
-                    _common_secret.pem.pub"
+       shell: "gluster system:: execute add_secret_pub {{ georepuser }} geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
   delegate_to: "{{ gluster_features_georep_slavenodes[0] }}"
+  when: gluster_features_georep_slavenodes is defined
   run_once: true
 
 # Restart glusterd on slavenodes
@@ -73,7 +73,7 @@
   delegate_to: "{{ item }}"
   loop: "{{ gluster_features_georep_slavenodes }}"
   run_once: true
-  when: georepuser != "root"
+  when: georepuser != "root" and gluster_features_georep_slavenodes is defined
 
 # Enable geo-replication
 - name: Create the geo-rep session
@@ -84,6 +84,7 @@
      force: true
      georepuser: "{{ georepuser }}"
   run_once: true
+  when: gluster_features_georep_slavenodes is defined
 
 # Ensure to delete the temporary directory
 - name: Delete the temporary directory
