@@ -50,19 +50,20 @@
 
      - name: Setup mountbroker
        shell: >
-         "gluster-mountbroker setup /var/gluster-mountbroker {{ groupname }}"
+         gluster-mountbroker setup /var/gluster-mountbroker {{ groupname }}
        when: georepuser != "root"
 
      - name: Add volume and user to mountbroker service
-       shell: "gluster-mountbroker add {{ gluster_features_georep_slavevol }} {{ georepuser }}"
+       shell: gluster-mountbroker add {{ gluster_features_georep_slavevol }} {{ georepuser }}
        when: georepuser != "root"
 
      - name: Copy pem keys
        shell: >
-         gluster system:: copy file /geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
+         gluster system:: copy file /geo-replication/"{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
 
      - name: Add pem keys
-       shell: "gluster system:: execute add_secret_pub {{ georepuser }} geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub"
+       shell: >
+         gluster system:: execute add_secret_pub {{ georepuser }} geo-replication/{{ gluster_features_georep_mastervol }}_{{ gluster_features_georep_slavevol }}_common_secret.pem.pub
   delegate_to: "{{ gluster_features_georep_slavenodes[0] }}"
   when: gluster_features_georep_slavenodes is defined
   run_once: true
@@ -80,7 +81,8 @@
   geo_rep:
      action: create
      mastervol: "{{ gluster_features_georep_mastervol }}"
-     slavevol: "{{ gluster_features_georep_slavenodes[0] }}:{{ gluster_features_georep_slavevol }}"
+     slavevol: >
+       "{{ gluster_features_georep_slavenodes[0] }}:{{ gluster_features_georep_slavevol }}"
      force: true
      georepuser: "{{ georepuser }}"
   run_once: true
