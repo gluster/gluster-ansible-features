@@ -27,6 +27,11 @@
   debug: msg={{ result.stderr }} verbosity=0
   when: result.stderr != ''
 
+- name: check if gluster_features_ganesha_volume is set
+  fail:
+    msg: "gluster_features_ganesha_volume is undefined"
+  when: gluster_features_ganesha_volume is not defined
+
 # gluster_volume has a bug where it tries to add a brick while setting options
 # on an existing volume. Use shell for now.
 - name: Export the NFS Ganesha volume
