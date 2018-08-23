@@ -1,5 +1,23 @@
 ---
 # Create volumes for gluster_hci
+
+- name: check if gluster_features_hci_cluster is set
+  fail:
+    msg: "gluster_features_hci_cluster is undefined"
+  when: gluster_features_hci_cluster is not defined
+  tags:
+    - gluster_hci
+
+- name: check if gluster_features_hci_volume_options is set
+  fail:
+    msg: "gluster_features_hci_volume_options is undefined"
+  when: gluster_features_hci_volume_options is not defined
+
+- name: check if gluster_features_hci_volumes is set
+  fail:
+    msg: "gluster_features_hci_volumes is undefined"
+  when: gluster_features_hci_volumes is not defined
+
 - name: Create the GlusterFS volumes
   gluster_volume:
      state: present
