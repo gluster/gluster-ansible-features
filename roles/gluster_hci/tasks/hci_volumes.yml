@@ -5,8 +5,6 @@
   fail:
     msg: "gluster_features_hci_cluster is undefined"
   when: gluster_features_hci_cluster is not defined
-  tags:
-    - gluster_hci
 
 - name: check if gluster_features_hci_volume_options is set
   fail:
