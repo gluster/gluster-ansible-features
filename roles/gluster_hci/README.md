@@ -33,7 +33,7 @@ detailed playbooks.
 ```
 - name: Setting up GlusterFS HCI
   remote_user: root
-  hosts: gluster_hci
+  hosts: hc-nodes
   gather_facts: false
 
   vars:
