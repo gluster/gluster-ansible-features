@@ -10,6 +10,9 @@
        - { volname: 'engine', brick: '/bricks/engine' }
        - { volname: 'data', brick: '/bricks/data' }
        - { volname: 'vmstore', brick: '/bricks/vmstore' }
+    gluster_features_hci_master: "{{ groups['hc-nodes'][0] }}"
+    # Default is 24007 try not to change unless you are sure.
+    gluster_features_hci_port: "24007"
 
   # This playbook assumes that backend is already setup and mounted on /bricks
   roles:

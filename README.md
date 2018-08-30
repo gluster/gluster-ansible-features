@@ -35,6 +35,8 @@ Role Variables
 | gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for further explanation and variables. |
 | gluster_features_hci_packages   | UNDEF | | List of packages to be installed. User need not set this, picked up from defaults. |
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. For default values see Gluster HCI documentation. |
+| gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'). This value will be ignored if glusterd1 is running on remote node. |
+| gluster_features_hci_port || 24007 | The glusterd2 port |
 
 
 Dependencies
@@ -76,6 +78,16 @@ Note to gather_facts should be set to true.
 ```
 
 The above playbook assumes that a volume named nfs_ganesha is created and running.
+
+
+Note:
+-----
+If you are using GlusterFS 4.0 (glusterd2) ensure to install
+python-gluster-mgmt-client package on the remote master host.
+
+Or create a directory glusterapilib on the remote host and copy the files
+volume.py, peer.py, common.py,__init__.py, excpetions.py under glusterapilib in
+a python searchable path.
 
 
 License
