@@ -18,6 +18,9 @@ Role Variables
 | gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for further explanation and variables. |
 | gluster_features_hci_packages   | | UNDEF | List of packages to be installed. User need not set this, picked up from defaults. |
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. For default values see Gluster HCI documentation. |
+| gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'. This value will be ignored if glusterd1 is running on remote node. |
+| gluster_features_hci_port || 24007 | The port to be set for the remote  |
+
 
 Dependencies
 ------------
