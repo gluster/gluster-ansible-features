@@ -9,7 +9,7 @@
      port: "{{ gluster_features_hci_port | default(omit) }}"
      replicas: 3
      transport: tcp
-     arbiters: "{{ item.arbiter | default(omit) }}"
+     #arbiters: "{{ item.arbiter | default(omit) }}"
      force: yes
      cluster: "{{ gluster_features_hci_cluster }}"
      options: "{{ gluster_features_hci_volume_options | default(omit) }}"
