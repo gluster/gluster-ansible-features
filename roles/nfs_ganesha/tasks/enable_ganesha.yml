@@ -29,7 +29,7 @@
 
 - name: check if gluster_features_ganesha_volume is set
   fail:
-    msg: "gluster_features_ganesha_volume is undefined"
+    msg: "Variable gluster_features_ganesha_volume has to be defined"
   when: gluster_features_ganesha_volume is not defined
 
 # gluster_volume has a bug where it tries to add a brick while setting options

@@ -17,7 +17,7 @@
 
 - name: check if gluster_features_ganesha_clusternodes is set
   fail:
-    msg: "gluster_features_ganesha_clusternodes is undefined"
+    msg: "Variable gluster_features_ganesha_clusternodes has to be defined"
   when: gluster_features_ganesha_clusternodes is not defined
 
 # Run this on all the nodes
@@ -30,14 +30,14 @@
 
 - name: check if gluster_features_ganesha_masternode is set
   fail:
-    msg: "gluster_features_ganesha_masternode is undefined"
+    msg: "Variable gluster_features_ganesha_masternode has to be defined"
   when: gluster_features_ganesha_masternode is not defined
 
 # The base directory has to be one of the directories unique in /tmp/
 # Generated in the main.yml of the task
 - name: Copy the ssh keys to the local machine
   fetch: src=/var/lib/glusterd/nfs/{{item}}
-         dest="{{ ganesha_tmp_dir }}"
+         dest= "{{ ganesha_tmp_dir }}"
   with_items:
      - secret.pem.pub
      - secret.pem
@@ -45,7 +45,7 @@
 
 - name: check if gluster_features_ganesha_newnodes_vip is set
   fail:
-    msg: "gluster_features_ganesha_newnodes_vip is undefined"
+    msg: "Variable gluster_features_ganesha_newnodes_vip has to be defined"
   when: gluster_features_ganesha_newnodes_vip is not defined
 
 # Run on all the nodes
