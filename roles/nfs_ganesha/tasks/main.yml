@@ -37,7 +37,7 @@
 # Generated in the main.yml of the task
 - name: Copy the ssh keys to the local machine
   fetch: src=/var/lib/glusterd/nfs/{{item}}
-         dest= "{{ ganesha_tmp_dir }}"
+         dest="{{ ganesha_tmp_dir }}"
   with_items:
      - secret.pem.pub
      - secret.pem
