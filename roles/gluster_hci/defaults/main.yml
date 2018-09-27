@@ -6,7 +6,7 @@ gluster_features_hci_packages:
    - ovirt-host
     # - ovirt-hosted-engine-setup
    - screen
-   - gluster-nagios-addons
+
 
 gluster_features_hci_volume_options:
    { group: 'virt',
