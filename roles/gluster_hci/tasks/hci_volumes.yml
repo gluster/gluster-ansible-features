@@ -1,5 +1,16 @@
 ---
 # Create volumes for gluster_hci
+
+- name: check if gluster_features_hci_cluster is set
+  fail:
+    msg: "Variable gluster_features_hci_cluster has to be defined"
+  when: gluster_features_hci_cluster is not defined
+
+- name: check if gluster_features_hci_volumes is set
+  fail:
+    msg: "Variable gluster_features_hci_volumes has to be defined"
+  when: gluster_features_hci_volumes is not defined
+
 - name: Create the GlusterFS volumes
   glusterd2_volume:
      state: present

@@ -1,6 +1,5 @@
 ---
 # Pre-requisites  for deploying HCI
-
 # Install the necessary packages for deploying HCI
 - name: Check if packages are installed, if not install
   package:

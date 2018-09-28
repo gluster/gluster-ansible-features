@@ -15,6 +15,11 @@
      ganesha_ha_base_dir: '/var/run/gluster/shared_storage/nfs-ganesha'
   run_once: True
 
+- name: check if gluster_features_ganesha_clusternodes is set
+  fail:
+    msg: "Variable gluster_features_ganesha_clusternodes has to be defined"
+  when: gluster_features_ganesha_clusternodes is not defined
+
 # Run this on all the nodes
 - name: Pre-requisites for setting up NFS Ganesha
   import_tasks: prerequisites.yml
@@ -22,6 +27,11 @@
   ignore_errors: true
   tags:
     - prerequisites
+
+- name: check if gluster_features_ganesha_masternode is set
+  fail:
+    msg: "Variable gluster_features_ganesha_masternode has to be defined"
+  when: gluster_features_ganesha_masternode is not defined
 
 # The base directory has to be one of the directories unique in /tmp/
 # Generated in the main.yml of the task
@@ -32,6 +42,11 @@
      - secret.pem.pub
      - secret.pem
   delegate_to: "{{ gluster_features_ganesha_masternode }}"
+
+- name: check if gluster_features_ganesha_newnodes_vip is set
+  fail:
+    msg: "Variable gluster_features_ganesha_newnodes_vip has to be defined"
+  when: gluster_features_ganesha_newnodes_vip is not defined
 
 # Run on all the nodes
 - name: Distribute the keys to nodes
