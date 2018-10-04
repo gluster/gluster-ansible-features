@@ -14,8 +14,7 @@ gluster_features_hci_volume_options:
      storage.owner-gid: '36',
      network.ping-timeout: '30',
      performance.strict-o-direct: 'on',
-     network.remote-dio: 'off',
-     cluster.granular-entry-heal: 'enable'
+     network.remote-dio: 'off'
    }
 
 gluster_features_hci_hookscripts:

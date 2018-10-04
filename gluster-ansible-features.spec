@@ -2,8 +2,8 @@
 %global docdir %{_datadir}/doc/gluster.features
 
 Name:      gluster-ansible-features
-Version:   0.2
-Release:   1%{?dist}
+Version:   0.3
+Release:   1
 Summary:   Ansible roles for GlusterFS infrastructure management
 
 URL:       https://github.com/gluster/gluster-ansible-features
@@ -38,6 +38,9 @@ cp -dpr README.md examples %{buildroot}/%{docdir}
 %license LICENSE
 
 %changelog
+* Thu Sep 27 2018 Sachidananda Urs <sac@redhat.com> 0.3
+- Embed gluster_volume module within role
+
 * Fri Aug 31 2018 Sachidananda Urs <sac@redhat.com> 0.2
 - Disabled geo-replication for the initial release
 
