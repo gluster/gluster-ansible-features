@@ -2,7 +2,7 @@
 %global docdir %{_datadir}/doc/gluster.features
 
 Name:      gluster-ansible-features
-Version:   0.3
+Version:   0.4
 Release:   1
 Summary:   Ansible roles for GlusterFS infrastructure management
 
@@ -38,6 +38,9 @@ cp -dpr README.md examples %{buildroot}/%{docdir}
 %license LICENSE
 
 %changelog
+* Fri Oct 12 2018 Sachidananda Urs <sac@redhat.com> 0.4
+- Remove granular-entry-self-heal from the setting vol opts
+
 * Thu Sep 27 2018 Sachidananda Urs <sac@redhat.com> 0.3
 - Embed gluster_volume module within role
 
