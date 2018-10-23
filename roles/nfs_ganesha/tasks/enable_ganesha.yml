@@ -2,7 +2,7 @@
 # Run only on the master node
 
 - name: Enable NFS Ganesha
-  shell: gluster nfs-ganesha enable --mode=script
+  command: gluster nfs-ganesha enable --mode=script
   register: result
   failed_when:
     - "'is already enabled' not in result.stderr"
@@ -35,7 +35,7 @@
 # gluster_volume has a bug where it tries to add a brick while setting options
 # on an existing volume. Use shell for now.
 - name: Export the NFS Ganesha volume
-  shell: >
+  command: >
      gluster volume set "{{gluster_features_ganesha_volume}}" ganesha.enable on
   register: result
   failed_when: "result.rc != 0 and ('already' not in result.stderr
