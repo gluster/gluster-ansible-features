@@ -17,10 +17,45 @@ Role Variables
 | gluster_features_hci_cluster |  | UNDEF   | The cluster ip/hostnames. Can be set by gluster_hci_cluster: "{{ groups['hc-nodes'] }}",  where hc-nodes is from the inventory file.  |
 | gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for further explanation and variables. |
 | gluster_features_hci_packages   | | UNDEF | List of packages to be installed. User need not set this, picked up from defaults. |
-| gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. For default values see Gluster HCI documentation. |
+| gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. See below for details on default values.|
 | gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'. This value will be ignored if glusterd1 is running on remote node. |
 | gluster_features_hci_port || 24007 | The port to be set for the remote  |
 
+### gluster_features_hci_volume_options
+---------------------------------------
+
+This variable defines the options that has to be set upon volume creation. If replica volume is created, the options are set by default by the role. The options set for replica volume are:
+
+```
+gluster_features_hci_volume_options:
+   { group: 'virt',
+     storage.owner-uid: '36',
+     storage.owner-gid: '36',
+     network.ping-timeout: '30',
+     performance.strict-o-direct: 'on',
+     network.remote-dio: 'off'
+   }
+```
+
+If the volume created is a _**single node distribute**_, then the variable _gluster_features_hci_volume_options_ has to be set in the playbook, which overrides the above values. Distribute volume should have the following options:
+
+```
+    gluster_features_hci_volume_options:
+      { storage.owner-uid: '36',
+        storage.owner-gid: '36',
+        features.shard: 'on',
+        performance.low-prio-threads: '32',
+        performance.strict-o-direct: 'on',
+        network.remote-dio: 'off',
+        network.ping-timeout: '30',
+        user.cifs: 'off',
+        nfs.disable: 'on',
+        performance.quick-read: 'off',
+        performance.read-ahead: 'off',
+        performance.io-cache: 'off',
+        cluster.eager-lock: enable
+      }
+```
 
 Dependencies
 ------------
