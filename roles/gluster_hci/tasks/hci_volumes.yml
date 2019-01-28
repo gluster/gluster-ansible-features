@@ -18,6 +18,26 @@
     replica_count: 3
   when: gluster_features_hci_cluster|length == 3
 
+# In case of distribute volumes update the volume options.
+- name: Set volume options (if distribute volume)
+  set_fact:
+    gluster_features_hci_volume_options:
+      { storage.owner-uid: '36',
+        storage.owner-gid: '36',
+        features.shard: 'on',
+        performance.low-prio-threads: '32',
+        performance.strict-o-direct: 'on',
+        network.remote-dio: 'off',
+        network.ping-timeout: '30',
+        user.cifs: 'off',
+        nfs.disable: 'on',
+        performance.quick-read: 'off',
+        performance.read-ahead: 'off',
+        performance.io-cache: 'off',
+        cluster.eager-lock: enable
+      }
+  when: gluster_features_hci_cluster|length == 1
+
 - name: Create the GlusterFS volumes
   glusterd2_volume:
      state: present
