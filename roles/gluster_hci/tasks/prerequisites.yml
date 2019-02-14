@@ -8,7 +8,7 @@
   with_items: "{{ gluster_features_hci_packages }}"
   when: gluster_features_hci_packages is defined
 
-# Enable and start chronyd and glusterd
+# Enable and start services
 - name: Enable and start glusterd and chronyd
   service:
      name: "{{ item }}"
@@ -17,6 +17,7 @@
   with_items:
      - chronyd
      - glusterd
+     - firewalld
 
 # Add user qemu to group gluster
 - name: Add user qemu to gluster group
@@ -32,6 +33,21 @@
   with_items: "{{ gluster_features_hci_hookscripts }}"
   when: gluster_features_hci_hookscripts is defined
   failed_when: false
+
+# Check if the hosts have FQDN
+- name: Check if valid FQDN is provided
+  command:
+  args:
+    argv:
+      - dig
+      - "{{ item }}"
+      - +short
+  register: result
+  with_items: "{{ groups['all'] }}"
+  failed_when: result.stdout_lines|length == 0
+  when: gluster_features_fqdn_check | default(true)
+  delegate_to: localhost
+  run_once: true
 
 # Disable multipath on all the nodes
 - name: Disable multipath and blacklist the devices

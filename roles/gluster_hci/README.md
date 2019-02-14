@@ -20,6 +20,7 @@ Role Variables
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. See below for details on default values.|
 | gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'. This value will be ignored if glusterd1 is running on remote node. |
 | gluster_features_hci_port || 24007 | The port to be set for the remote  |
+| gluster_features_fqdn_check |true/false|true|Check if the hosts have valid FQDN|
 
 ### gluster_features_hci_volume_options
 ---------------------------------------
