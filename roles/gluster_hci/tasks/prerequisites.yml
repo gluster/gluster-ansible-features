@@ -49,6 +49,14 @@
   delegate_to: localhost
   run_once: true
 
+# Check if /var has enough disk. We check for 15G minimum.
+- name: Check if /var/log has enough disk space
+  shell: df -m /var/log | awk '/[0-9]%/ {print $4}'
+  register: disk_size
+  failed_when: disk_size.stdout|int < gluster_features_min_disk|default(15360)
+  when: gluster_features_force_diskcheck | default(true)
+  tags: diskcheck
+
 # Disable multipath on all the nodes
 - name: Disable multipath and blacklist the devices
   block:
