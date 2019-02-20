@@ -20,6 +20,10 @@ Role Variables
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. See below for details on default values.|
 | gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'. This value will be ignored if glusterd1 is running on remote node. |
 | gluster_features_hci_port || 24007 | The port to be set for the remote  |
+| gluster_features_fqdn_check |true/false|true|Check if the hosts have valid FQDN. Set the variable to false to skip the FQDN check.|
+| gluster_features_min_disk ||15360|The minimum disk size that /var/log directory must have for the role to proceed. By default the role checks for 15G. Should be in megabytes|
+| gluster_features_force_varlogsizecheck |true/false|true|Force the role to enforce the minimum disk size requirement for /var/log. If set to false, disk size check is ignored.|
+|gluster_features_512B_check|true/false|true|If set to false, logical block size is not checked. By default checks if logical block size for a disk is set to 512 bytes.|
 
 ### gluster_features_hci_volume_options
 ---------------------------------------
