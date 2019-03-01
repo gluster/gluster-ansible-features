@@ -65,6 +65,7 @@
   register: logical_blk_size
   failed_when: logical_blk_size.stdout|int != 512
   when: gluster_infra_volume_groups is defined and
+        item.pvname is not search("/dev/mapper") and
         gluster_features_512B_check|default(true)
   with_items: "{{ gluster_infra_volume_groups }}"
 
