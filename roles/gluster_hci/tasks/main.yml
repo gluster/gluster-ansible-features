@@ -5,6 +5,13 @@
   tags:
     - prerequisites
 
+# Setup glusterd slice
+- name: Setup slice for glusterd
+  import_tasks: slice_setup.yml
+  when: gluster_features_slice_setup|default(true)
+  tags:
+    - setupslice
+
 # Create GlusterFS volumes on the nodes
 - name: Create GlusterFS volumes
   import_tasks: hci_volumes.yml
