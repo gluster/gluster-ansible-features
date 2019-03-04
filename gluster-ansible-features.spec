@@ -1,10 +1,10 @@
 %global rolesdir %{_sysconfdir}/ansible/roles/gluster.features
 %global docdir %{_datadir}/doc/gluster.features
-%global buildnum 1
+%global buildnum 5
 
 Name:      gluster-ansible-features
-Version:   1.0.0
-Release:   1%{?dist}
+Version:   1.0.4
+Release:   5%{?dist}
 Summary:   Ansible roles for GlusterFS infrastructure management
 
 URL:       https://github.com/gluster/gluster-ansible-features
@@ -39,6 +39,12 @@ cp -dpr README.md examples %{buildroot}/%{docdir}
 %license LICENSE
 
 %changelog
+* Mon Mar 4 2019 Sachidananda Urs <sac@redhat.com> 1.0.4-5
+- Add slice setup support rhbz#1683528
+
+* Fri Mar 1 2019 Sachidananda Urs <sac@redhat.com> 1.0.4-4
+- Validate if the disks have logical sector size of 512B rhbz#1674608
+
 * Wed Feb 20 2019 Sachidananda Urs <sac@redhat.com> 1.0.0-1
 - Bumping version number to 1
 
