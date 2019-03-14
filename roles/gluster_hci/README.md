@@ -25,6 +25,7 @@ Role Variables
 | gluster_features_force_varlogsizecheck |true/false|true|Force the role to enforce the minimum disk size requirement for /var/log. If set to false, disk size check is ignored.|
 |gluster_features_512B_check|true/false|true|If set to false, logical block size is not checked. By default checks if logical block size for a disk is set to 512 bytes.|
 |gluster_features_slice_setup|true/false|true|If set to false, slice setup will not be done. This features creates a CPU slice limiting the glusterd process's CPU consumption|
+|gluster_features_enable_ipv6|true/false|false|If set to true, role will configure glusterd to use ipv6 address|
 
 ### gluster_features_hci_volume_options
 ---------------------------------------
