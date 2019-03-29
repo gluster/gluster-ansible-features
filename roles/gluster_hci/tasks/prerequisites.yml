@@ -34,17 +34,17 @@
   when: gluster_features_hci_hookscripts is defined
   failed_when: false
 
-# Check if the hosts have FQDN
-- name: Check if valid FQDN is provided
+# Check if the hosts have valid hostnames
+- name: Check if valid hostnames are provided
   command:
   args:
     argv:
-      - dig
+      - getent
+      - ahosts
       - "{{ item }}"
-      - +short
   register: result
   with_items: "{{ groups['all'] }}"
-  failed_when: result.stdout_lines|length == 0
+  failed_when: result.stdout_lines|length == 0 and result.rc != 0
   when: gluster_features_fqdn_check | default(true)
   delegate_to: localhost
   run_once: true
