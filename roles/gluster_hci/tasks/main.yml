@@ -17,3 +17,9 @@
   import_tasks: hci_volumes.yml
   tags:
     - hcivolcreate
+
+# Run pre-requisite check for deploying Hosted Engine
+- name: Check disk latency
+  import_tasks: hosted_engine_pre_check.yml
+  tags:
+    - latencycheck
