@@ -12,6 +12,14 @@
   tags:
     - setupslice
 
+# Configure glusterd to use ipv6.
+# Don't try to configure if FQDN is not set.
+- name: Configure glusterd to use ipv6
+  import_tasks: glusterd_ipv6.yml
+  when: gluster_features_enable_ipv6 | default(false)
+  tags:
+    - setupipv6
+
 # Create GlusterFS volumes on the nodes
 - name: Create GlusterFS volumes
   import_tasks: hci_volumes.yml
