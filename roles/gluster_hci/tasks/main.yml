@@ -31,3 +31,10 @@
   import_tasks: hosted_engine_pre_check.yml
   tags:
     - latencycheck
+
+# Setup ssl on nodes if specified
+- name: Enable SSL on hosts
+  import_tasks: ssl-setup.yml
+  when: gluster_features_enable_ssl|default(false)
+  tags:
+    - sslsetup
