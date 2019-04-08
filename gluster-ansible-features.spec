@@ -1,5 +1,4 @@
 %global rolesdir %{_sysconfdir}/ansible/roles/gluster.features
-%global docdir %{_datadir}/doc/gluster.features
 %global buildnum 5
 
 Name:      gluster-ansible-features
@@ -26,15 +25,11 @@ Gluster HCI on GlusterFS clusters
 
 %install
 mkdir -p %{buildroot}/%{rolesdir}
-cp -dpr defaults handlers meta roles tasks tests README.md LICENSE vars \
+cp -dpr defaults handlers meta roles tasks tests README.md LICENSE vars README.md examples\
    %{buildroot}/%{rolesdir}
-
-mkdir -p %{buildroot}/%{docdir}
-cp -dpr README.md examples %{buildroot}/%{docdir}
 
 %files
 %{rolesdir}
-%doc %{docdir}
 
 %license LICENSE
 
