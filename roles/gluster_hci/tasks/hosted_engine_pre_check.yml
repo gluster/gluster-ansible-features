@@ -1,0 +1,55 @@
+---
+# Check if 1MB write with 512byte chunk size takes less than 10 seconds.
+# The writes are to be done on GlusterFS mounts
+
+- set_fact:
+      mount_points: "{{ mount_points|default([]) +
+                        [ '/mnt/tmp/' + item.volname ] }}"
+  with_items: "{{ gluster_features_hci_volumes }}"
+
+- set_fact:
+      glusterfs_server: "{{ gluster_features_hci_cluster[0] }}"
+
+- name: Check the latency of the disk before HE install
+  block:
+     - name: Mount the glusterfs volume
+       mount:
+          path: "/mnt/tmp/{{ item.volname }}"
+          state: mounted
+          fstype: glusterfs
+          src: "{{ glusterfs_server }}:{{ item.volname }}"
+       run_once: true
+       with_items: "{{ gluster_features_hci_volumes }}"
+
+     # We do a awk print NF-3 since newer version of coreutils print data copied both
+     # in MB and MiB thus adding extra column, which will break our time extraction
+     # command.
+     - name: Check the disk latency (mount points)
+       shell: >
+          dd if=/dev/zero of={{item}}/small.file bs=512 count=2050 oflag=direct 2>&1 |
+             awk '/copied/{print $(NF-3)}'
+       register: seconds
+       with_items: "{{ mount_points }}"
+
+     # If on any of the mounts if the time taken is more than 10 seconds fail the
+     # task.
+     - name: Check if time taken to copy 1M file (512B chunks) is < 10s
+       fail:
+          msg: "Disk latency is very high, time taken to copy 1M file is > 10s"
+       when: item.stdout|int > 9
+       loop: "{{ seconds.results }}"
+       loop_control:
+          label: "{{ item.stdout }}"
+
+  always:
+     - name: Unmount the volume
+       mount:
+          path: "{{ item }}"
+          state: absent
+       with_items: "{{ mount_points }}"
+
+     - name: Remove the temporary directory
+       file:
+          path: /mnt/tmp
+          state: absent
+  delegate_to: "{{ glusterfs_server }}"
