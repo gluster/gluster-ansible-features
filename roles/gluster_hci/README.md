@@ -26,6 +26,14 @@ Role Variables
 |gluster_features_512B_check|true/false|true|If set to false, logical block size is not checked. By default checks if logical block size for a disk is set to 512 bytes.|
 |gluster_features_slice_setup|true/false|true|If set to false, slice setup will not be done. This features creates a CPU slice limiting the glusterd process's CPU consumption|
 |gluster_features_enable_ipv6|true/false|false|If set to true, role will configure glusterd to use ipv6 address|
+|gluster_features_enable_ssl|true/false|false|If set to true, role will configure ssl on the provided volumes|
+|gluster_features_ssl_clients||None|A comma separated list of ssl clients to be configured. This variable is optional.|
+|gluster_features_priv_key||/etc/ssl/glusterfs.key|If set, the value is used to store the generated key.|
+|gluster_features_ssl_self_signed|true/false|true|If set to false, a private key has to be provided. And the role will not generate a key.|
+|gluster_features_cert_file||/etc/ssl/glusterfs.pem|If the user wishes to use third party certificate, this variable has to be set to point to the certificate. If the variable is not set, then the self-signed certificate /etc/ssl/glusterfs.pem will be used.|
+|gluster_features_cert_validity||365|Validity of the certificate in days. Default is 1 year|
+|gluster_features_ssl_volumes||gluster_features_hci_volumes|Volumes on which to setup ssl. By default ssl will be created on all the HCI volumes.|
+
 
 ### gluster_features_hci_volume_options
 ---------------------------------------
