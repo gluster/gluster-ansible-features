@@ -1,5 +1,9 @@
 ---
 # Pre-requisites  for deploying HCI
+# Some of the prerequisite checks like FQDN, disk size of var, logical block
+# size of 512B are moved to pre_tasks of:
+# gluster-ansible/playbooks/hc-ansible-deployment/tasks/gluster_deployment.yml
+
 # Install the necessary packages for deploying HCI
 - name: Check if packages are installed, if not install
   package:
@@ -33,41 +37,6 @@
   with_items: "{{ gluster_features_hci_hookscripts }}"
   when: gluster_features_hci_hookscripts is defined
   failed_when: false
-
-# Check if the hosts have valid hostnames
-- name: Check if valid hostnames are provided
-  command:
-  args:
-    argv:
-      - getent
-      - ahosts
-      - "{{ item }}"
-  register: result
-  with_items: "{{ groups['all'] }}"
-  failed_when: result.stdout_lines|length == 0 and result.rc != 0
-  when: gluster_features_fqdn_check | default(true)
-  delegate_to: localhost
-  run_once: true
-
-# Check if /var has enough disk. We check for 15G minimum.
-- name: Check if /var/log has enough disk space
-  shell: df -m /var/log | awk '/[0-9]%/ {print $4}'
-  register: disk_size
-  failed_when: disk_size.stdout|int < gluster_features_min_disk|default(15360)
-  when: gluster_features_force_varlogsizecheck | default(true)
-
-# We reference variables from gluster-infra to check if the disks have
-# logical block size of 512 bytes. To disable the check set
-# gluster_features_512B_check to false. DELETE the below task once
-# OVirt limitation is fixed
-- name: Check if disks have logical block size of 512B else fail
-  command: cat /sys/block/{{item.pvname|basename}}/queue/logical_block_size
-  register: logical_blk_size
-  failed_when: logical_blk_size.stdout|int != 512
-  when: gluster_infra_volume_groups is defined and
-        item.pvname is not search("/dev/mapper") and
-        gluster_features_512B_check|default(true)
-  with_items: "{{ gluster_infra_volume_groups }}"
 
 # Disable multipath on all the nodes
 - name: Disable multipath and blacklist the devices
