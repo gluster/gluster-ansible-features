@@ -1,19 +1,4 @@
 ---
-# Check if the FQDN maps to ipv6, get the AAAA record
-- name: Check if given hosts have ipv6 configured
-  command:
-  args:
-    argv:
-      - dig
-      - +short
-      - "{{ item }}"
-      - AAAA
-  register: v6result
-  with_items: "{{ groups['all'] }}"
-  failed_when: v6result.stdout_lines|length == 0
-  delegate_to: localhost
-  run_once: true
-
 - name: Enable ipv6 in glusterd config file
   block:
      - name: Edit glusterd config file to enable ipv6
