@@ -16,7 +16,6 @@ Role Variables
 |--------------------------|-------|-----------------------|-----------------------------------|
 | gluster_features_hci_cluster |  | UNDEF   | The cluster ip/hostnames. Can be set by gluster_hci_cluster: "{{ groups['hc-nodes'] }}",  where hc-nodes is from the inventory file.  |
 | gluster_features_hci_volumes  |  | UNDEF | This is a dictionary setting the volume information. See below for further explanation and variables. |
-| gluster_features_hci_packages   | | UNDEF | List of packages to be installed. User need not set this, picked up from defaults. |
 | gluster_features_hci_volume_options |  | UNDEF | This is not needed to be set by user, defaults are picked up. Set to override defaults. See below for details on default values.|
 | gluster_features_hci_master | | UNDEF | The REST host to be connected to (do not include `http'. This value will be ignored if glusterd1 is running on remote node. |
 | gluster_features_hci_port || 24007 | The port to be set for the remote  |
@@ -24,7 +23,6 @@ Role Variables
 | gluster_features_min_disk ||15360|The minimum disk size that /var/log directory must have for the role to proceed. By default the role checks for 15G. Should be in megabytes|
 | gluster_features_force_varlogsizecheck |true/false|true|Force the role to enforce the minimum disk size requirement for /var/log. If set to false, disk size check is ignored.|
 |gluster_features_512B_check|true/false|true|If set to false, logical block size is not checked. By default checks if logical block size for a disk is set to 512 bytes.|
-|gluster_features_slice_setup|true/false|true|If set to false, slice setup will not be done. This features creates a CPU slice limiting the glusterd process's CPU consumption|
 |gluster_features_enable_ipv6|true/false|false|If set to true, role will configure glusterd to use ipv6 address|
 |gluster_features_enable_ssl|true/false|false|If set to true, role will configure ssl on the provided volumes|
 |gluster_features_ssl_clients||None|A comma separated list of ssl clients to be configured. This variable is optional.|

@@ -1,2 +1,0 @@
-[Slice]
-CPUQuota={{ (ansible_processor_vcpus/3)|round(0, 'ceil')|int * 100 }}%
