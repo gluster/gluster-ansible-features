@@ -1,5 +1,9 @@
 ---
 # Pre-requisites  for deploying HCI
+# Some of the prerequisite checks like FQDN, disk size of var, logical block
+# size of 512B are moved to pre_tasks of:
+# gluster-ansible/playbooks/hc-ansible-deployment/tasks/gluster_deployment.yml
+
 # Install the necessary packages for deploying HCI
 - name: Check if packages are installed, if not install
   package:
