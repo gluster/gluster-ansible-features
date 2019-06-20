@@ -5,13 +5,6 @@
   tags:
     - prerequisites
 
-# Setup glusterd slice
-- name: Setup slice for glusterd
-  import_tasks: slice_setup.yml
-  when: gluster_features_slice_setup|default(true)
-  tags:
-    - setupslice
-
 # Configure glusterd to use ipv6.
 # Don't try to configure if FQDN is not set.
 - name: Configure glusterd to use ipv6

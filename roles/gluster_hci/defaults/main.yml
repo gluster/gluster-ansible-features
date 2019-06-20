@@ -1,12 +1,5 @@
 ---
 # defaults file for gluster_hci
-gluster_features_hci_packages:
-   - vdsm
-   - vdsm-gluster
-   - ovirt-host
-    # - ovirt-hosted-engine-setup
-   - screen
-
 
 gluster_features_hci_volume_options:
    { group: 'virt',
