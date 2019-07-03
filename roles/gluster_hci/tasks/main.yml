@@ -19,11 +19,14 @@
   tags:
     - hcivolcreate
 
+# We disable hosted engine pre-check for now.
+# Ref: https://bugzilla.redhat.com/show_bug.cgi?id=1674600#c9
+
 # Run pre-requisite check for deploying Hosted Engine
-- name: Check disk latency
-  import_tasks: hosted_engine_pre_check.yml
-  tags:
-    - latencycheck
+# - name: Check disk latency
+#   import_tasks: hosted_engine_pre_check.yml
+#   tags:
+#     - latencycheck
 
 # Setup ssl on nodes if specified
 - name: Enable SSL on hosts
