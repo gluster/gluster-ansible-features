@@ -16,7 +16,7 @@
 - name: Determine the volume type
   set_fact:
     replica_count: 3
-  when: gluster_features_hci_cluster|length == 3
+  when: gluster_features_hci_cluster|length >= 3
 
 - name: Create the GlusterFS volumes
   glusterd2_volume:
@@ -50,7 +50,34 @@
      options: "{{ gluster_features_hci_volume_options | default(omit) }}"
   run_once: true
   with_items: "{{ gluster_features_hci_volumes }}"
-  when: gluster_features_hci_master is not defined
+  when: "gluster_features_hci_master is not defined and gluster_features_hci_volumes[0].servers is not defined"
+
+- name: Attach node to the trusted storage pool
+  command: gluster peer probe {{ item }} --mode=script
+  with_items: "{{ gluster_features_hci_cluster }}"
+  when: "gluster_features_hci_volumes[0].servers is defined"
+  run_once: true
+
+- name: Pause for 10 seconds to avoid race
+  pause: seconds=10
+  when: "gluster_features_hci_volumes[0].servers is defined"
+
+- name: Create the GlusterFS volumes for specific nodes
+  gluster_volume:
+     state: present
+     name: "{{ item.volname }}"
+     bricks: "{{ item.brick }}"
+     master: "{{ gluster_features_hci_master | default(omit) }}"
+     port: "{{ gluster_features_hci_port | default(omit) }}"
+     replicas: "{{ replica_count | default(omit) }}"
+     transport: tcp
+     arbiters: "{{ item.arbiter | default(omit) }}"
+     force: yes
+     cluster: "{{ item.servers }}"
+     options: "{{ gluster_features_hci_volume_options | default(omit) }}"
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+  when: "gluster_features_hci_volumes[0].servers is defined"
 
 # gluster_volume does not support `gluster heal' command which gluster
 # has implemented as an exception.
