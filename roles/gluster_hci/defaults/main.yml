@@ -1,29 +1,13 @@
 ---
 # defaults file for gluster_hci
-gluster_features_hci_packages:
-   - vdsm
-   - vdsm-gluster
-   - ovirt-host
-    # - ovirt-hosted-engine-setup
-   - screen
-   - gluster-nagios-addons
 
 gluster_features_hci_volume_options:
-   {  # group: 'virt',
+   { group: 'virt',
      storage.owner-uid: '36',
      storage.owner-gid: '36',
-     features.shard: 'on',
-     features.shard-block-size: '512MB',
-     performance.low-prio-threads: '32',
-     cluster.data-self-heal-algorithm: 'full',
-     cluster.locking-scheme: 'granular',
-     cluster.shd-wait-qlength: '10000',
-     cluster.shd-max-threads: '8',
      network.ping-timeout: '30',
-     user.cifs: 'off',
      performance.strict-o-direct: 'on',
-     network.remote-dio: 'off',
-     cluster.use-compound-fops: 'on'
+     network.remote-dio: 'off'
    }
 
 gluster_features_hci_hookscripts:

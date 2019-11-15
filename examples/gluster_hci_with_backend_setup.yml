@@ -32,6 +32,10 @@
         - { volname: 'engine', brick: '/store/engine/engine' }
         - { volname: 'data', brick: '/store/data/data' }
         - { volname: 'vmstore', brick: '/store/vmstore/vmstore' }
+     gluster_features_hci_master: "{{ groups['hc-nodes'][0] }}"
+     # Default is 24007 try not to change unless you are sure.
+     gluster_features_hci_port: "24007"
+
 
   roles:
      - gluster.infra

@@ -23,7 +23,7 @@
              '/var/lib/glusterd/nfs/secret.pem.pub') }}"
 
 - name: Adds a node to the cluster
-  shell: >
+  command: >
      /usr/libexec/ganesha/ganesha-ha.sh --add "{{ ganesha_ha_base_dir }}" \
                                         {{ item.host }} {{ item.vip }}
   with_items: "{{ gluster_features_ganesha_newnodes_vip }}"

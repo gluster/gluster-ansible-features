@@ -67,14 +67,14 @@
 # Set the password
 - name: Set the password for hacluster
   set_fact:
-     ganesha_ha_pass: "{{ganesha_ha_pass|default('hacluster')}}"
+     gluster_features_ganesha_ha_pass: "{{gluster_features_ganesha_ha_pass|default('hacluster')}}"
 
 - name: Set the hacluster user the same password on new nodes
   shell: >
-    echo "{{ganesha_ha_pass}}" | passwd --stdin hacluster
+    echo "{{gluster_features_ganesha_ha_pass}}" | passwd --stdin hacluster
 
 - name: Pcs cluster authenticate the hacluster on new nodes
-  shell: pcs cluster auth -u hacluster -p "{{ganesha_ha_pass}}" "{{ item }}"
+  command: pcs cluster auth -u hacluster -p "{{gluster_features_ganesha_ha_pass}}" "{{ item }}"
   with_items: "{{ gluster_features_ganesha_clusternodes }}"
 
 - name: Pause for a few seconds after pcs auth

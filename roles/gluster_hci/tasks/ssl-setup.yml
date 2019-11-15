@@ -1,0 +1,139 @@
+---
+- set_fact:
+      ssl_allow_list: "{{ (groups['all'] + gluster_features_ssl_clients |
+                           default([])) | join(',')}}"
+
+# Generate temporary file for storing the keys
+- name: Create temporary directory to store keys
+  tempfile:
+     state: directory
+     suffix: ssl
+  register: result
+  delegate_to: 127.0.0.1
+  run_once: True
+
+- name: Get the name of the directory created
+  set_fact:
+     ssl_base_dir: "{{ result['path'] }}"
+  run_once: True
+
+- name: Generate private key on the servers
+  block:
+     # Generate private key
+     - name: Generate private key for setting up SSL
+       command: openssl genrsa -out {{ gluster_features_priv_key |
+                 default('/etc/ssl/glusterfs.key') }} 2048
+       when: gluster_features_ssl_self_signed | default(True)
+
+     # Using command module instead of openssl_certificate since we don't have
+     # pyopenssl by default.
+     - name: Generate a OpenSSL certificate
+       command: openssl req -new -x509 -key {{ gluster_features_priv_key |
+                   default('/etc/ssl/glusterfs.key') }} -subj
+                   /CN={{ inventory_hostname }} -out
+                   {{ gluster_features_cert_file |
+                      default('/etc/ssl/glusterfs.pem') }} -days
+                   {{ gluster_features_cert_validity | default(1095) }}
+       when: gluster_features_ssl_self_signed | default(True)
+
+     - name: Copy the signed certificate to localhost
+       fetch:
+          src: /etc/ssl/glusterfs.pem
+          dest: "{{ ssl_base_dir }}/{{ inventory_hostname }}.pem"
+          flat: yes
+       when: gluster_features_ssl_self_signed | default(True)
+
+     - name: Create CA file on servers
+       assemble:
+          remote_src: False
+          src: "{{ ssl_base_dir }}/"
+          dest: /etc/ssl/glusterfs.ca
+          mode: 0644
+       when: gluster_features_ssl_self_signed | default(True)
+
+     - name: Check if CA certs are present
+       stat:
+          path: /etc/ssl/glusterfs.ca
+       register: file_stat
+
+     - name: Fail if glusterfs.ca file does not exist
+       assert:
+          that:
+             - 'file_stat.stat.exists == True'
+             - 'file_stat.stat.isreg == True'
+          fail_msg: "File /etc/ssl/glusterfs.ca not found"
+
+  always:
+  # Ensure to delete the fetched files
+     - name: Delete the temporary directory
+       file:
+          state: absent
+          path: "{{ ssl_base_dir }}"
+       delegate_to: 127.0.0.1
+       run_once: True
+
+- name: Create /var/lib/glusterd if not present
+  file:
+     path: /var/lib/glusterd
+     state: directory
+  ignore_errors: yes
+
+- name: Enable management encryption
+  file:
+     path: /var/lib/glusterd/secure-access
+     state: touch
+
+# We restart glusterd over here since glusterd fails to set
+# volume options (intermittently)
+- name: Restart glusterd
+  service:
+     name: glusterd
+     state: restarted
+
+# - name: Set volume options for SSL
+#   gluster_volume:
+#      state: present
+#      volume: "{{ item.volname }}"
+#      options:
+#          { client.ssl: 'on',
+#            server.ssl: 'on',
+#            auth.ssl-allow: "{{ ssl_allow_list }}" }
+#   with_items: "{{ gluster_features_ssl_volumes |
+#                   default(gluster_features_hci_volumes) }}"
+#   run_once: true
+
+# We are setting the volume options manually since we can't use the
+# gluster_volume module due to bug:
+# https://github.com/ansible/ansible/issues/56781
+
+- name: Set volume options for ssl
+  shell: >
+     gluster volume set {{ item.volname }} client.ssl 'on';
+     gluster volume set {{ item.volname }} server.ssl 'on';
+     gluster volume set {{ item.volname }} auth.ssl-allow "{{ ssl_allow_list }}";
+  with_items: "{{ gluster_features_ssl_volumes |
+                  default(gluster_features_hci_volumes) }}"
+  run_once: true
+
+- name: Restart glusterd
+  service:
+     name: glusterd
+     state: restarted
+
+- name: stop the volume
+  gluster_volume:
+     state: stopped
+     volume: "{{ item.volname }}"
+     force: yes
+  with_items: "{{ gluster_features_ssl_volumes |
+                  default(gluster_features_hci_volumes) }}"
+  run_once: true
+
+- name: restart the volume
+  gluster_volume:
+     state: started
+     volume: "{{ item.volname }}"
+     force: yes
+  with_items: "{{ gluster_features_ssl_volumes |
+                  default(gluster_features_hci_volumes) }}"
+  run_once: true

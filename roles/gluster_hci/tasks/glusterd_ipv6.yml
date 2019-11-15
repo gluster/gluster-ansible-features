@@ -1,0 +1,14 @@
+---
+- name: Enable ipv6 in glusterd config file
+  block:
+     - name: Edit glusterd config file to enable ipv6
+       lineinfile:
+          path: /etc/glusterfs/glusterd.vol
+          regexp: '^#(.* inet6)'
+          line: ' \1'
+          backrefs: yes
+
+     - name: Restart glusterd
+       service:
+          name: glusterd
+          state: restarted

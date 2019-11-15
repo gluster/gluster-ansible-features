@@ -31,6 +31,8 @@ Role Variables
 | gluster_features_ganesha_masternode |    | UNDEF | One of the nodes from the Trusted Storage Pool, gluster commands will be run on this node. gluster_features_ganesha_masternode: "{{ groups['ganesha_nodes'][0] }}" - the first node of the inventory section ganesha_nodes will be used.|
 | gluster_features_ganesha_clusternodes |    | UNDEF | List of the nodes in the Trusted Storage Pool. gluster_features_ganesha_clusternodes: "{{ groups['ganesha_nodes'] }}" - The nodes listed in section ganesha_nodes in the inventory. |
 | gluster_features_ganesha_newnodes_vip | | | Dictionary containing the ip/hostname of new node and corresponding VIP. See example below. |
+| gluster_features_ganesha_ha_pass | | | Password for ha cluster, this variable has to be encrypted using ansible-vault. |
+
 
 Dependencies
 ------------
@@ -49,6 +51,7 @@ An example playbook to deploy NFS Ganesha.
   remote_user: root
   hosts: nfs_ganesha
   gather_facts: false
+  no_log: True
 
   vars:
      # Setting up NFS Ganesha
@@ -75,6 +78,7 @@ An example playbook to add a new node to NFS Ganesha cluster.
   hosts: newnodes
   remote_user: root
   gather_facts: false
+  no_log: True
 
   vars:
     gluster_features_ganesha_masternode: '10.70.42.31'
