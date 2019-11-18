@@ -88,6 +88,17 @@
   run_once: true
   when: gluster_features_georep_slavenodes is defined
 
+- name: Start the geo-rep session
+  geo_rep:
+     action: start
+     mastervol: "{{ gluster_features_georep_mastervol }}"
+     slavevol: >
+       "{{ gluster_features_georep_slavenodes[0] }}:{{ gluster_features_georep_slavevol }}"
+     force: true
+     georepuser: "{{ georepuser }}"
+  run_once: true
+  when: gluster_features_georep_slavenodes is defined
+
 # Ensure to delete the temporary directory
 - name: Delete the temporary directory
   file:
