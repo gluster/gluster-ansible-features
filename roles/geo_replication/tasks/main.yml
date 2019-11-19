@@ -27,3 +27,13 @@
     gluster_features_georep_slavevol is defined
   tags:
     - georep_session_create
+
+# Run only on masternode
+- name: Stop geo_rep session
+  import_tasks: georep_session_stop.yml
+  when: >
+    gluster_features_georep_session_stop is defined and
+    gluster_features_georep_mastervol is defined and
+    gluster_features_georep_slavevol is defined
+  tags:
+    - georep_session_stop
