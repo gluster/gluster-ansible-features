@@ -32,8 +32,18 @@
 - name: Stop geo_rep session
   import_tasks: georep_session_stop.yml
   when: >
-    gluster_features_georep_session_stop is defined and
+    gluster_features_georep_mastervol is defined and
+    gluster_features_georep_slavevol is defined and
+    gluster_features_georep_session_delete is not defined
+  tags:
+    - georep_session_stop
+
+# Run only on masternode
+- name: Delete geo_rep session
+  import_tasks: georep_session_delete.yml
+  when: >
+    gluster_features_georep_session_delete is defined and
     gluster_features_georep_mastervol is defined and
     gluster_features_georep_slavevol is defined
   tags:
-    - georep_session_stop
+    - georep_session_delete
