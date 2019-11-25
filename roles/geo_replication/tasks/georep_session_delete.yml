@@ -10,8 +10,8 @@
   run_once: true
   when: gluster_features_georep_slavenodes is defined
 
-# Stop geo-replication session
-- name: Stop the geo-rep session
+# Delete geo-replication session
+- name: Delete the geo-rep session
   geo_rep:
      action: delete
      mastervol: "{{ gluster_features_georep_mastervol }}"
