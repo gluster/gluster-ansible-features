@@ -28,6 +28,17 @@
   tags:
     - georep_session_create
 
+# Run only on slavenode
+- name: Setup Failover in georep session
+  import_tasks: georep_failover.yml
+  when: >
+    gluster_features_georep_mastervol is defined and
+    gluster_features_georep_slavevol is defined and
+    gluster_features_georep_failover is defined and
+    gluster_features_georep_session_delete is not defined
+  tags:
+    - georep_session_failover
+
 # Run only on masternode
 - name: Stop geo_rep session
   import_tasks: georep_session_stop.yml
