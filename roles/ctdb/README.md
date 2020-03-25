@@ -45,7 +45,7 @@ An example playbook to setup CTDB.
      # Setting up CTDB for GlusterFS cluster
      gluster_features_ctdb_volume: gluster-ctdb
      gluster_features_ctdb_nodes: 192.168.1.1,192.168.2.5
-     gluster_features_ctdb_physicaladdr: '10.70.37.6/24 eth0,10.70.37.8/24 eth0'
+     gluster_features_ctdb_publicaddr: '10.70.37.6/24 eth0,10.70.37.8/24 eth0'
 
   roles:
      - gluster.features
