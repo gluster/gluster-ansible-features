@@ -1,6 +1,8 @@
 ---
 # tasks file for ctdb
 - name: Setup ctdb for GlusterFS
+  collections:
+     - gluster.gluster
   import_tasks: setup_ctdb.yml
   when: gluster_features_ctdb_publicaddr is defined
   tags:
