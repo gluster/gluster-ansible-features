@@ -21,6 +21,8 @@
 
 # Run only on masternode
 - name: Setup shared storage and generate keys
+  collections:
+    - gluster.gluster
   import_tasks: georep_session_create.yml
   when: >
     gluster_features_georep_mastervol is defined and
@@ -41,6 +43,8 @@
 
 # Run only on masternode
 - name: Stop geo_rep session
+  collections:
+    - gluster.gluster
   import_tasks: georep_session_stop.yml
   when: >
     gluster_features_georep_mastervol is defined and
@@ -51,6 +55,8 @@
 
 # Run only on masternode
 - name: Delete geo_rep session
+  collections:
+    - gluster.gluster
   import_tasks: georep_session_delete.yml
   when: >
     gluster_features_georep_session_delete is defined and
