@@ -61,6 +61,8 @@
       - /var/lib/glusterd/hooks/1/stop/pre/S29CTDB-teardown.sh
       - /var/lib/glusterd/hooks/1/start/post/S29CTDBsetup.sh
   ignore_errors: yes
+  when: >
+    gluster_features_ctdb_enable_hook_scripts | default(true)
 
 # Restart the GlusterFS volume
 - name: Stop GlusterFS volume
