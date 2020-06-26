@@ -19,6 +19,7 @@ Role Variables
 | gluster_features_ctdb_volume |    | UNDEF | GlusterFS volumename to configure with CTDB|
 | gluster_features_ctdb_nodes  |  | UNDEF | Comma separated list of IP addresses  |
 | gluster_features_ctdb_publicaddr | | UNDEF | Comma separated list of public addresses with interface. For eg: 10.70.37.6/24 eth0,10.70.37.8/24 eth0|
+| gluster_features_ctdb_enable_hook_scripts | true/false | true | Enable the hook scripts to stop/start ctdb |
 | gluster_features_smb_username | | UNDEF | Samba username |
 | gluster_features_smb_password | | UNDEF | Samba password. Note that password variable has to be encrypted using ansible-vault |
 
