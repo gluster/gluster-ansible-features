@@ -53,3 +53,4 @@
           path: /mnt/tmp
           state: absent
   delegate_to: "{{ glusterfs_server }}"
+  connection: ssh
