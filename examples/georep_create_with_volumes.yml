@@ -1,0 +1,64 @@
+---
+- name: Create a master volume
+  remote_user: root
+  hosts: masters
+  gather_facts: false
+
+  vars:
+    # Variables for backendsetup
+    gluster_infra_stripe_unit_size: 128
+    gluster_infra_pvs: /dev/vdb
+    # Create a thin volume
+    gluster_infra_lv_logicalvols:
+       - { lvname: 'glusterstore_thinlv', lvsize: '500G' }
+    gluster_infra_mount_devices:
+       - { path: '/storage',   lv: glusterstore_thinlv }
+
+    # GlusterFS volume
+    gluster_cluster_volume: 'master'
+    gluster_cluster_replica_count: 2
+    gluster_cluster_bricks: '/storage/master'
+    gluster_cluster_hosts: "{{ groups['masters'] }}"
+    gluster_cluster_force: 'yes'
+
+  roles:
+     - gluster.infra
+     - gluster.cluster
+
+- name: Create a slave volume
+  remote_user: root
+  hosts: slaves
+  gather_facts: false
+
+  vars:
+    # Variables for backendsetup
+    gluster_infra_stripe_unit_size: 128
+    gluster_infra_pvs: /dev/vdb
+    # Create a thin volume
+    gluster_infra_lv_logicalvols:
+       - { lvname: 'glusterstore_thinlv', lvsize: '500G' }
+    gluster_infra_mount_devices:
+       - { path: '/storage',   lv: glusterstore_thinlv }
+
+    # GlusterFS volume
+    gluster_cluster_volume: 'slave'
+    gluster_cluster_replica_count: 2
+    gluster_cluster_bricks: '/storage/slave'
+    gluster_cluster_hosts: "{{ groups['slaves'] }}"
+    gluster_cluster_force: 'yes'
+  roles:
+     - gluster.infra
+     - gluster.cluster
+
+- name: Set up geo-replication
+  remote_user: root
+  hosts: servers
+  gather_facts: false
+
+  vars:
+     gluster_features_georep_mastervol: master
+     gluster_features_georep_slavevol: slave
+     gluster_features_georep_masternode: "{{ groups['masters'][0] }}"
+     gluster_features_georep_slavenodes: "{{ groups['slaves'] }}"
+  roles:
+     - gluster.features
