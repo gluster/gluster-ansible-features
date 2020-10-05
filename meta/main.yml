@@ -18,6 +18,5 @@ galaxy_info:
     - nfs_ganesha
     - gluster_hci
     - ctdb
-    - georeplication
 
 dependencies: []
