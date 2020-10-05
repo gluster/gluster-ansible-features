@@ -26,11 +26,3 @@
   tags:
     - ctdb
 
-# Setup Geo-Replication
-- name: Setup Geo-Replication
-  import_role:
-    name: "gluster.features/roles/geo_replication"
-  when: >
-    gluster_features_georep_mastervol is defined
-  tags:
-    - georeplication
