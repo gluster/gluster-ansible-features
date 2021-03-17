@@ -7,7 +7,8 @@ gluster_features_hci_volume_options:
      storage.owner-gid: '36',
      network.ping-timeout: '30',
      performance.strict-o-direct: 'on',
-     network.remote-dio: 'off'
+     network.remote-dio: 'off',
+     cluster.lookup-optimize: 'off'
    }
 
 gluster_features_hci_hookscripts:
