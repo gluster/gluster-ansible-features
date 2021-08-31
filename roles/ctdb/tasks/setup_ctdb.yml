@@ -9,11 +9,31 @@
   when: >
      ctdb_packages is defined and
      ctdb_packages | length > 0
+  register: packages_deployed
 
 - name: Creates /etc/ctdb directory
   file:
      path: /etc/ctdb
      state: directory
+
+- name: Reload firewalld before enabling ctdb service
+  service:
+    name: firewalld
+    state: reloaded
+  when:
+  - 'packages_deployed.changed'
+  - 'gluster_ctdb_fw_services is defined'
+
+- name: Add/Delete services to firewalld rules
+  firewalld:
+        service: "{{ item }}"
+        permanent: "{{ gluster_ctdb_fw_permanent | default('false') }}"
+        state: "{{ gluster_ctdb_fw_state }}"
+        zone: "{{ gluster_ctdb_fw_zone | default('public') }}"
+        immediate: "{{ gluster_ctdb_fw_immediate | default('yes') }}"
+  with_items: "{{ gluster_ctdb_fw_services }}"
+  when: 'gluster_ctdb_fw_services is defined'
+  notify: Reload firewall
 
 # Unfortunately ansible does not provide modules to empty the contents
 #  of a file. We will remove the file and create a empty file.

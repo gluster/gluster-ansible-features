@@ -6,3 +6,6 @@ ctdb_packages:
    - glusterfs-server
    - ctdb
 
+gluster_ctdb_fw_permanent: true
+gluster_ctdb_fw_state: enabled
+gluster_ctdb_fw_zone: public

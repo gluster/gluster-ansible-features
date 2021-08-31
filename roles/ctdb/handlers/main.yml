@@ -1,2 +1,4 @@
 ---
 # handlers file for ctdb
+- name: Reload firewall
+  command: firewall-cmd --reload
