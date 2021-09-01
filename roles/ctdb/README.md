@@ -16,6 +16,7 @@ Role Variables
 
 | Name                     |Choices| Default value         | Comments                          |
 |--------------------------|-------|-----------------------|-----------------------------------|
+| gluster_ctdb_fw_services |       |  CTDB | List of firewalld services that need to be opened |
 | gluster_ctdb_fw_permanent    | true/false | TRUE  | Firewalld persisitence state for the CTDB service |    
 | gluster_ctdb_fw_state        | enabled/disabled | ENABLED | Firewalld State for the CTDB service |
 | gluster_ctdb_fw_zone         |    | PUBLIC | Firewalld zone on which CTDB service will be opened | 
