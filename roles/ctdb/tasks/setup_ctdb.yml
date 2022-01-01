@@ -35,36 +35,25 @@
   when: 'gluster_ctdb_fw_services is defined'
   notify: Reload firewall
 
-# Unfortunately ansible does not provide modules to empty the contents
-#  of a file. We will remove the file and create a empty file.
-- name: Remove nodes and public_addresses files
-  file:
-     path: "{{ item }}"
-     state: absent
-  with_items:
-     - /etc/ctdb/nodes
-     - /etc/ctdb/public_addresses
+- name: Create/Update the nodes in /etc/ctdb/nodes
+  copy:
+    content: |
+      {% for node in gluster_features_ctdb_nodes.split(',') -%}
+      {{ node }}
+      {% endfor -%}
+    dest: '/etc/ctdb/nodes'
+    mode: '0644'
+    follow: True
 
-- name: Create files nodes and public_addresses
-  file:
-     path: "{{ item }}"
-     state: touch
-  with_items:
-     - /etc/ctdb/nodes
-     - /etc/ctdb/public_addresses
-
-- name: Add nodes entry to /etc/ctdb/nodes
-  lineinfile:
-     dest: /etc/ctdb/nodes
-     line: "{{ item }}"
-  with_items: "{{ gluster_features_ctdb_nodes.split(',') }}"
-
-- name: Add public address entries to /etc/ctdb/public_addresses
-  lineinfile:
-     dest: /etc/ctdb/public_addresses
-     line: "{{ item }}"
-  when: gluster_features_ctdb_publicaddr is defined
-  with_items: "{{ gluster_features_ctdb_publicaddr.split(',') }}"
+- name: Create/Update public address entries to /etc/ctdb/public_addresses
+  copy:
+    content: |
+      {% for node in gluster_features_ctdb_publicaddr.split(',') -%}
+      {{ node }}
+      {% endfor -%}
+    dest: '/etc/ctdb/public_addresses'
+    mode: '0644'
+    follow: True
 
 - name: Enable clustering in Samba
   lineinfile:
