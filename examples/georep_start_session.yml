@@ -5,7 +5,7 @@
 
   tasks:
   - name: Start the geo-rep session
-    geo_rep:
+    gluster.gluster.geo_rep:
        action: start
        mastervol: "{{ gluster_features_georep_mastervol }}"
        slavevol: >

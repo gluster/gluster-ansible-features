@@ -11,7 +11,7 @@ Source0:   %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}-%{buildnum}.tar
 License:   GPLv3
 BuildArch: noarch
 
-Requires:  ansible >= 2.6
+Requires:  ansible-core >= 2.12
 
 %description
 Collection of Ansible roles for the deploying and managing GlusterFS clusters.
@@ -54,4 +54,3 @@ cp -dpr defaults handlers meta roles tasks tests README.md LICENSE vars README.m
 
 * Tue Apr 24 2018 Sachidananda Urs <sac@redhat.com> 0.1
 - Initial release.
-

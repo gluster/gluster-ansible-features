@@ -5,7 +5,7 @@
 
   tasks:
   - name: Status of the geo-rep session
-    geo_rep:
+    gluster.gluster.geo_rep:
        action: status
        mastervol: "{{ gluster_features_georep_mastervol }}"
        slavevol: >

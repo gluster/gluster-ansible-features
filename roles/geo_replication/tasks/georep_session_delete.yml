@@ -1,6 +1,6 @@
 # Stop geo-replication session
 - name: Stop the geo-rep session
-  geo_rep:
+  gluster.gluster.geo_rep:
      action: stop
      mastervol: "{{ gluster_features_georep_mastervol }}"
      slavevol: >
@@ -12,7 +12,7 @@
 
 # Delete geo-replication session
 - name: Delete the geo-rep session
-  geo_rep:
+  gluster.gluster.geo_rep:
      action: delete
      mastervol: "{{ gluster_features_georep_mastervol }}"
      slavevol: >
