@@ -1,13 +1,13 @@
 %global rolesdir %{_sysconfdir}/ansible/roles/gluster.features
-%global buildnum 5
+%global buildnum 12
 
 Name:      gluster-ansible-features
-Version:   1.0.4
-Release:   5%{?dist}
+Version:   1.0.5
+Release:   %{buildnum}%{?dist}
 Summary:   Ansible roles for GlusterFS infrastructure management
 
 URL:       https://github.com/gluster/gluster-ansible-features
-Source0:   %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}-%{buildnum}.tar.gz
+Source0:   %{url}/archive/v%{version}-%{buildnum}.tar.gz#/%{name}-%{version}-%{buildnum}.tar.gz
 License:   GPLv3
 BuildArch: noarch
 
@@ -19,7 +19,7 @@ The features role enables user to configure CTDB, NFS-Ganesha, Geo-Replication,
 Gluster HCI on GlusterFS clusters
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}-%{buildnum}
 
 %build
 
@@ -34,6 +34,9 @@ cp -dpr defaults handlers meta roles tasks tests README.md LICENSE vars README.m
 %license LICENSE
 
 %changelog
+* Fri Apr 01 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.5-12
+- Rebase on v1.0.5-12
+
 * Mon Mar 4 2019 Sachidananda Urs <sac@redhat.com> 1.0.4-5
 - Add slice setup support rhbz#1683528
 
