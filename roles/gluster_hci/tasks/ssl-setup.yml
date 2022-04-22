@@ -121,19 +121,21 @@
      state: restarted
 
 - name: stop the volume
-  gluster_volume:
-     state: stopped
-     volume: "{{ item.volname }}"
-     force: yes
+  command: "gluster volume stop {{ item.volname }} force"
+  #gluster_volume:
+  #   state: stopped
+  #   volume: "{{ item.volname }}"
+  #   force: yes
   with_items: "{{ gluster_features_ssl_volumes |
                   default(gluster_features_hci_volumes) }}"
   run_once: true
 
 - name: restart the volume
-  gluster_volume:
-     state: started
-     volume: "{{ item.volname }}"
-     force: yes
+  command: "gluster volume start {{ item.volname }} force"
+  #gluster_volume:
+  #   state: started
+  #   volume: "{{ item.volname }}"
+  #   force: yes
   with_items: "{{ gluster_features_ssl_volumes |
                   default(gluster_features_hci_volumes) }}"
   run_once: true
