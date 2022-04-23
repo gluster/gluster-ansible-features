@@ -18,19 +18,51 @@
     replica_count: 3
   when: gluster_features_hci_cluster|length >= 3
 
+- name: Print gluster_features_hci_volumes
+  ansible.builtin.debug:
+    msg: pre items {{ gluster_features_hci_volumes }}
+
+- name: Attach gluster peers
+  shell: >
+    gluster peer probe {{ item }}
+  run_once: true
+  ignore_errors: true
+  with_items: "{{ gluster_features_hci_cluster }}"
+
 - name: Create the GlusterFS volumes
-  gluster_volume:
-     state: present
-     name: "{{ item.volname }}"
-     bricks: "{{ item.brick }}"
-     master: "{{ gluster_features_hci_master | default(omit) }}"
-     port: "{{ gluster_features_hci_port | default(omit) }}"
-     replicas: "{{ replica_count | default(omit) }}"
-     transport: tcp
-     arbiters: "{{ item.arbiter | default(omit) }}"
-     force: yes
-     cluster: "{{ gluster_features_hci_cluster }}"
-     options: "{{ gluster_features_hci_volume_options | default(omit) }}"
+  shell: >
+   gluster volume create {{ item.volname }} replica {{ replica_count | default(omit) }} {% if item.arbiter > 0 %} arbiter 1 {% endif %} transport tcp {% for host in gluster_features_hci_cluster  %} {{ host }}:{{ item.brick }} {% endfor %} force
+#  gluster_volume:
+#     state: present
+#     name: "{{ item.volname }}"
+#     bricks: "{{ item.brick }}"
+#     master: "{{ gluster_features_hci_master | default(omit) }}"
+#     port: "{{ gluster_features_hci_port | default(omit) }}"
+#     replicas: "{{ replica_count | default(omit) }}"
+#     transport: tcp
+#     arbiters: "{{ item.arbiter | default(omit) }}"
+#     force: yes
+#     cluster: "{{ gluster_features_hci_cluster }}"
+#     options: "{{ gluster_features_hci_volume_options | default(omit) }}"
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+  when: "gluster_features_hci_master is not defined and gluster_features_hci_volumes[0].servers is not defined"
+
+- name: Set gluster volume options
+  shell: >
+   gluster volume set {{ item.volname }} {% for option in gluster_features_hci_volume_options | dict2items %}  {% if option.key != "group" %} {{ option.key }}  {{ option.value }} {% endif %} {% endfor %}
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+
+- name: Set virt to gluster volume
+  shell: >
+   gluster volume set {{ item.volname }} group virt
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+
+
+- name: Start the GlusterFS volumes
+  command: "gluster volume start {{ item.volname }}"
   run_once: true
   with_items: "{{ gluster_features_hci_volumes }}"
   when: "gluster_features_hci_master is not defined and gluster_features_hci_volumes[0].servers is not defined"
@@ -46,18 +78,30 @@
   when: "gluster_features_hci_volumes[0].servers is defined"
 
 - name: Create the GlusterFS volumes for specific nodes
-  gluster_volume:
-     state: present
-     name: "{{ item.volname }}"
-     bricks: "{{ item.brick }}"
-     master: "{{ gluster_features_hci_master | default(omit) }}"
-     port: "{{ gluster_features_hci_port | default(omit) }}"
-     replicas: "{{ replica_count | default(omit) }}"
-     transport: tcp
-     arbiters: "{{ item.arbiter | default(omit) }}"
-     force: yes
-     cluster: "{{ item.servers }}"
-     options: "{{ gluster_features_hci_volume_options | default(omit) }}"
+  shell: >
+   gluster volume create {{ item.volname }} replica {{ replica_count | default(omit) }} transport tcp {% for host in item.servers  %} {{ host }}:{{ item.brick }} {% endfor %} force
+#  gluster_volume:
+#     state: present
+#     name: "{{ item.volname }}"
+#     bricks: "{{ item.brick }}"
+#     master: "{{ gluster_features_hci_master | default(omit) }}"
+#     port: "{{ gluster_features_hci_port | default(omit) }}"
+#     replicas: "{{ replica_count | default(omit) }}"
+#     transport: tcp
+#     arbiters: "{{ item.arbiter | default(omit) }}"
+#     force: yes
+#     cluster: "{{ item.servers }}"
+#     options: "{{ gluster_features_hci_volume_options | default(omit) }}" // this need to set
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+  when: "gluster_features_hci_volumes[0].servers is defined"
+
+- name: add user to the gluster bricks
+  command: chown -R vdsm:kvm {{ item.path + '/' }}
+  with_items: "{{ gluster_infra_mount_devices }}"
+
+- name: Start the GlusterFS volumes
+  command: "gluster volume start {{ item.volname }}"
   run_once: true
   with_items: "{{ gluster_features_hci_volumes }}"
   when: "gluster_features_hci_volumes[0].servers is defined"
@@ -70,3 +114,4 @@
   run_once: true
   with_items: "{{ gluster_features_hci_volumes }}"
   when: gluster_features_hci_master is not defined and replica_count is defined
+

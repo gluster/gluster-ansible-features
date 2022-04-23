@@ -75,13 +75,14 @@
 
 # Restart the GlusterFS volume
 - name: Stop GlusterFS volume
-  gluster_volume:
-     state: "{{ item }}"
-     name: "{{ gluster_features_ctdb_volume }}"
+  command: "gluster volume {{ item }} {{ gluster_features_ctdb_volume }} force"
+  #gluster_volume:
+  #   state: "{{ item }}"
+  #   name: "{{ gluster_features_ctdb_volume }}"
   run_once: True
   with_items:
-     - stopped
-     - started
+     - stop
+     - start
 
 # - name: Enable and start ctdb service
 #   service:
