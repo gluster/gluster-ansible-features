@@ -1,5 +1,5 @@
 %global rolesdir %{_sysconfdir}/ansible/roles/gluster.features
-%global buildnum 12
+%global buildnum 13
 
 Name:      gluster-ansible-features
 Version:   1.0.5
@@ -34,6 +34,9 @@ cp -dpr defaults handlers meta roles tasks tests README.md LICENSE vars README.m
 %license LICENSE
 
 %changelog
+* Thu May 05 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.5-13
+- Rebase on v1.0.5-13
+
 * Fri Apr 01 2022 Sandro Bonazzola <sbonazzo@redhat.com> - 1.0.5-12
 - Rebase on v1.0.5-12
 
