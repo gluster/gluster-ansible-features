@@ -31,7 +31,7 @@
 
 - name: Create the GlusterFS volumes
   shell: >
-   gluster volume create {{ item.volname }} replica {{ replica_count | default(omit) }} {% if item.arbiter > 0 %} arbiter 1 {% endif %} transport tcp {% for host in gluster_features_hci_cluster  %} {{ host }}:{{ item.brick }} {% endfor %} force
+   gluster volume create {{ item.volname }} {% if gluster_features_hci_cluster|length >= 3 %} replica {{ replica_count | default(omit) }} {% endif %} {% if item.arbiter > 0 %} arbiter 1 {% endif %} transport tcp {% for host in gluster_features_hci_cluster  %} {{ host }}:{{ item.brick }} {% endfor %} force
 #  gluster_volume:
 #     state: present
 #     name: "{{ item.volname }}"
