@@ -74,15 +74,21 @@
     gluster_features_ctdb_enable_hook_scripts | default(true)
 
 # Restart the GlusterFS volume
-- name: Stop GlusterFS volume
-  command: "gluster volume {{ item }} {{ gluster_features_ctdb_volume }} force"
-  #gluster_volume:
-  #   state: "{{ item }}"
-  #   name: "{{ gluster_features_ctdb_volume }}"
-  run_once: True
-  with_items:
-     - stop
-     - start
+- name: Restart GlusterFS volume
+  block:
+    - name: Stop GlusterFS volume
+      #gluster_volume:
+      #   state: "stopped"
+      #   name: "{{ gluster_features_ctdb_volume }}"
+      ansible.builtin.expect:
+        command: "gluster volume stop {{ gluster_features_ctdb_volume }} force"
+        responses:
+          (.*)Stopping volume will make its data inaccessible. Do you want to continue?(.*): "y"
+      run_once: True
+
+    - name: Start GlusterFS volume
+      command: "gluster volume start {{ gluster_features_ctdb_volume }} force"
+      run_once: True
 
 # - name: Enable and start ctdb service
 #   service:
