@@ -48,20 +48,6 @@
   with_items: "{{ gluster_features_hci_volumes }}"
   when: "gluster_features_hci_master is not defined and gluster_features_hci_volumes[0].servers is not defined"
 
-- name: Set gluster volume options
-  shell: >
-   gluster volume set {{ item.volname }} {% for option in gluster_features_hci_volume_options | dict2items %}  {% if option.key != "group" %} {{ option.key }}  {{ option.value }} {% endif %} {% endfor %}
-  run_once: true
-  with_items: "{{ gluster_features_hci_volumes }}"
-
-#Setting virt options for replicate volume only because some of the option of virt not supported for Distribute volume type
-- name: Set virt to gluster volume
-  shell: >
-   gluster volume set {{ item.volname }} group virt
-  run_once: true
-  with_items: "{{ gluster_features_hci_volumes }}"
-  when: gluster_features_hci_cluster|length >= 3
-
 - name: Start the GlusterFS volumes
   command: "gluster volume start {{ item.volname }}"
   run_once: true
@@ -96,6 +82,20 @@
   run_once: true
   with_items: "{{ gluster_features_hci_volumes }}"
   when: "gluster_features_hci_volumes[0].servers is defined"
+
+- name: Set gluster volume options
+  shell: >
+   gluster volume set {{ item.volname }} {% for option in gluster_features_hci_volume_options | dict2items %}  {% if option.key != "group" %} {{ option.key }}  {{ option.value }} {% endif %} {% endfor %}
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+
+#Setting virt options for replicate volume only because some of the option of virt not supported for Distribute volume type
+- name: Set virt to gluster volume
+  shell: >
+   gluster volume set {{ item.volname }} group virt
+  run_once: true
+  with_items: "{{ gluster_features_hci_volumes }}"
+  when: gluster_features_hci_cluster|length >= 3
 
 - name: add user to the gluster bricks
   command: chown -R vdsm:kvm {{ item.path + '/' }}
